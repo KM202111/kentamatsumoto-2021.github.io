@@ -10,7 +10,7 @@
 - お店
   
 ### BLEのお話
-  - だいたいざっくりBLE
-  - nRF5 SDK
-  - nRF Connect SDK
+  - だいたいざっくりBLE / nRF5 SDK / nRF Connect SDK をまとめた感じのヤツはローカルPCの中
+
+### [めも](https://dedendendeden.blogspot.com)  
 
