@@ -22,76 +22,78 @@ Bluetooth3 までのを含むモジュールの場合、Dual mode。BLEだけの
 スマフォ・タブレットと繋げるというのがBluetooth - BLEの役割  
 
 ### メモ
-Bluetooth3まではSPPとかだったけど、BLEの場合はGATTベース  
-データ構造を任意に定義できるようになった  
-MAX 20byte(octet)まで送受信可能  
+**Bluetooth3まではSPPとかだったけど、BLEの場合はGATTベース**  
+**データ構造を任意に定義できるようになった**  
+**MAX 20byte(octet)まで送受信可能**  
 
-Peripheral Role でのアドバタイズのUUIDはビッグエンディアン（CentralからScanする際はPeripheralのadv UUIDを反転させてscanさせないとデバイスが見えない）  
+**Peripheral Role でのアドバタイズのUUIDはビッグエンディアン（CentralからScanする際はPeripheralのadv UUIDを反転させてscanさせないとデバイスが見えない）**  
 
-GATTのRead / Notification / Indication それぞれどう振る舞う？  
-   (ReadはGATT Clientから読む。NotificationはGATT Serverから送る。IndicationはNotification + ACK。IndicationはACK返すだけ)  
+**GATTのRead / Notification / Indication それぞれどう振る舞う？**  
+   - (ReadはGATT Clientから読む。NotificationはGATT Serverから送る。IndicationはNotification + ACK。IndicationはACK返すだけ)  
 
-Read時に読み込むGATT Characteristicの順番はどうなっている？  
-   (GattCharacteristic *ControllerChars[] = { &accelChar, &writeChar, }; で定義した順序で読まれる。Notificationの時も最初にくっ付けたcharacteristicが多く来る・・・のかな？)  
+**Read時にサービスから読み込むGATT Characteristicの順番はどうなっている？**  
 
-BLEって、クラシックBluetoothのSPPみたいにシリアル通信できないの？  
-　（iOSをClientにして、dispatch_queue_t centralQueue = dispatch_queue_create("hoge.fuga", DISPATCH_QUEUE_SERIAL); としてSerialQueueにしてReadすれば出来る。  
+   - Characteristics を先にくっ付けた順番 (GattCharacteristic *ControllerChars[] = { &accelChar, &writeChar, };) で読まれる。Notificationの時も最初にくっ付けたcharacteristicが多く来る・・・のかな？)  
 
-Notification / Indicationでは出来ない -順不同になる-   
-特に、コンカレントな接続で複数デバイス接続するともう順番ぐちゃぐちゃになるます。  
+**BLEって、クラシックBluetoothのSPPみたいにシリアル通信できないの？**  
+　- （iOSをClientにして、dispatch_queue_t centralQueue = dispatch_queue_create("hoge.fuga", DISPATCH_QUEUE_SERIAL); としてSerialQueueにしてReadすれば出来る。  
+ - Notification / Indicationでは出来ない -順不同になる-   
+ - 特に、コンカレントな接続で複数デバイス接続するともう順番ぐちゃぐちゃになるます。  
 
-BLE4.2 で ATT MTU Exchange を使用することにより、247オクテットまでは拡張できるようになった。  
- ただしアプリケーションより下のレイヤーでパケットが分割（L2CAPだと・・・なんだろ？フレーム？）されて送信されたりするし、その辺りは物理層とSoftDeviceなどの下位レイヤーの実装に依る。  
-あと、デバイスでMTUを247にしてもiOSとのMTU交換時にiOS側が決めるので、iOSのバージョンによっては185になったりします。  
-そうなると結局中途半端なので、データ長は128など区切りのいいとこで区切るか、もしくはGATT Clientでデータはくっ付けるので、データ長が分かれば受信側の最大長のData Lengthで送信しておけばいいです  
-
-
-Readの時にGATT Characteristicの読み込み（複数Readしていると）処理が追いつかないよ！？  
-   (ReadするCharacteristicの数を減らすか、複数のPeripheralに分けましょう。)  
-
-センサーが速すぎて、BLEのコネクションインターバル内に収まらない  
-　（512Hzとかのセンサーをくっ付けると、コネクションインターバルの最小値7.5msで追いつけないので、配列や構造体に複数サンプル載せましょう。）  
-
-開発中にGATTを変えると、iPhoneのBluetoothをオン・オフしないとダメだけど、service changedっていうCharacteristicもあるようです。  
-　・でもペアリングしていると、ペアリング情報を削除してBTをオン・オフしないとダメなので、微妙です。もう、BTオン・オフすれば良いんじゃないかな・・・。  
-
-ペアリングの情報がiPhoneに残っていると、BLEデバイスのHexファイルを書き換えた時、iPhoneのBluetoothをON/OFFしてもキャッシュが残ったままでハマる  
-  （ペアリング情報を削除後、iPhoneのBluetoothをON/OFFしましょう）  
-
-パケット落ちって分かるの？  
-　CRCは付いてるけど、エラー訂正はBluetooth5のCODEDを使うしか無い。  
-
-受信側ではちゃんとバッファリングしような。  
+**BLE4.2 で ATT MTU Exchange を使用することにより、247オクテットまでは拡張できるようになった。**  
+ - ただしアプリケーションより下のレイヤーでパケットが分割（L2CAPだと・・・なんだろ？フレーム？）されて送信されたりするし、その辺りは物理層とSoftDeviceなどの下位レイヤーの実装に依る。  
+ - あと、デバイスでMTUを247にしてもiOSとのMTU交換時にiOS側が決めるので、iOSのバージョンによっては185になったりします。  
+ - そうなると結局中途半端なので、データ長は128など区切りのいいとこで区切るか、もしくはGATT Clientでデータはくっ付けるので、データ長が分かれば受信側の最大長のData Lengthで送信しておけばいいです  
 
 
-ペアリングとボンディングって違うの？？？（何が違うの？どう違うの？？？
-   めっちゃ大雑把に。鍵交換をするのがペアリング。鍵を保存するのがボンディング（っていうらしいです）  
-   両方を含めた意味で、ペアリングと呼ぶことが多いらしいです。  
+**Readの時にGATT Characteristicの読み込み（複数Readしていると）処理が追いつかないよ！？**  
+   - (ReadするCharacteristicの数を減らすか、複数のPeripheralに分けましょう。)  
+
+**センサーが速すぎて、BLEのコネクションインターバル内に収まらない**  
+　- （512Hzとかのセンサーをくっ付けると、コネクションインターバルの最小値7.5msで追いつけないので、配列や構造体に複数サンプル載せましょう。）  
+
+**開発中にGATTを変えると、iPhoneのBluetoothをオン・オフしないとダメだけど、service changedっていうCharacteristicもあるようです。**  
+　- でもペアリングしていると、ペアリング情報を削除してBTをオン・オフしないとダメなので、微妙です。もう、BTオン・オフすれば良いんじゃないかな・・・。  
+
+**ペアリングの情報がiPhoneに残っていると、BLEデバイスのHexファイルを書き換えた時、iPhoneのBluetoothをON/OFFしてもキャッシュが残ったままでハマる**  
+  - ペアリング情報を削除後、iPhoneのBluetoothをON/OFFしましょう  
+
+**パケット落ちって分かるの？**  
+　- CRCは付いてるけど、エラー訂正はBluetooth5のCODEDを使うしか無い。  
+
+**受信側ではちゃんとバッファリングしような。**  
 
 
-GAPとGATT  
-GAP  
-　役割（Role）・デバイス名などBLEデバイス全体に関わるパラメータを設定します。  
-GATT  
-　データの定義と振る舞いを任意に設定できます。  
-　BluetoothSIGによってあらかじめ決められたプロファイルもありますが、開発者が加速度センサーなどを繋いでスマートフォンなどにセンサー値を送信したりする時、任意のデータ構造（配列とか変数とかintとかfloatとか）とRead/Write/Notification/Indicationなどの振る舞いを設定できるのがGATTプロファイルになります。  
-
-GATT Server / GATT Client  
-   データを持っている方がサーバー。データを受け取る方がクライアント。  
-   BLEでは通常、（センサーの）データを持っているBLEデバイスがサーバーになる事が多い。  
-   L2CAPのレイヤーではマスター・スレーブと言ったりするけど、レイヤーが違うと呼び方が違いますよ。という事ですね。  
+**ペアリングとボンディングって違うの？？？（何が違うの？どう違うの？？？**
+   - めっちゃ大雑把に。鍵交換をするのがペアリング。鍵を保存するのがボンディング（っていうらしいです）  
+   - 両方を含めた意味で、ペアリングと呼ぶことが多いらしいです。  
 
 
-Security Manager  
-   BLEではペアリングは無い・・・という解説を見かけたりすることもありますが、スマートフォンとBLEデバイスを１対１で接続する場合にペアリング（及びボンディング）した後、接続させる事もできます。  
-   その際に鍵の交換などの処理を司っているのがSecurity Managerになります。  
-   NFCを利用したOOBペアリングというのもあります。  
+**GAPとGATT**  
 
-ANCS(Apple Notification Center Service)  
-   スマフォ(iPhone/iPad)・BLEデバイス連携でよくある、スマフォ(iPhone/iPad)の通知情報をBLEデバイスに伝える仕組み・・・ですが、これは少々特殊で、iPhoneとBLEデバイスが両方Peripheral Roleです。  
-   つまり、Roleとしては両方PeripheralですがGATT ServerとGATT Clientが逆になっている・・・ということです。  
+**GAP**  
+　 - 役割（Role）・デバイス名などBLEデバイス全体に関わるパラメータを設定します。  
 
-# Bluetooth 5
+**GATT**  
+　- データの定義と振る舞いを任意に設定できます。  
+　- Bluetooth SIGによってあらかじめ決められた16bit UUIDのプロファイルもありますが、開発者が加速度センサーなどを繋いでスマートフォンなどにセンサー値を送信したりする時、任意のデータ構造とRead/Write/Notification/Indicationなどの振る舞いを設定できるのが GATTプロファイルになります(128bit UUIDね)。  
+
+**GATT Server / GATT Client**  
+   - データを持っている方がサーバー。データを受け取る方がクライアント。  
+   - BLEでは通常、（センサーの）データを持っているBLEデバイスがサーバーになる事が多い。  
+   - L2CAPのレイヤーではマスター・スレーブと言ったりするらしいけど、レイヤーが違うと呼び方が違いますよ。という事だそうです。  
+
+
+**Security Manager**  
+   - BLEではペアリングは無い・・・という解説を見かけたりすることもありますが、スマートフォンとBLEデバイスを１対１で接続する場合にペアリング（及びボンディング）した後、接続させる事もできます。  
+   - その際に鍵の交換などの処理を司っているのがSecurity Managerになります。  
+   - NFCを利用したOOBペアリングというのもあります。  
+
+**ANCS(Apple Notification Center Service)**  
+   - スマフォ(iPhone/iPad)・BLEデバイス連携でよくある、スマフォ(iPhone/iPad)の通知情報をBLEデバイスに伝える仕組み・・・ですが、これは少々特殊で、iPhoneとBLEデバイスが両方Peripheral Roleです。  
+   - つまり、Roleとしては両方PeripheralですがGATT ServerとGATT Clientが逆になっている・・・ということです。  
+
+## Bluetooth 5
 2018年 3月時点での話のまとめ  
 
 Nordic semiの場合、nRF51822 及び nRF52xxx  
@@ -109,7 +111,7 @@ Long Range
 但し、これらは必須ではなくErrataに対応していればBluetooth5となる点に注意が必要  
 Bluetooth SIG認証は 最低限Bluetooth 4.2に対応していないと取得出来ないように変更されました。  
 
-## Bluetooth5 対応MCU 
+### Bluetooth5 対応MCU 
 **がれすたさんツッコミありがとうございます  
 
 （Nordic Semiの場合。他社さんも色々あるけど、有りすぎるのとソフトウェアの方知らないんでとりあえずNordic限定で）  
@@ -129,7 +131,7 @@ nRF5340 - でゅあるこあのスゴイやつ！！ <- New
 メモリー足りねーんだよーーーーーばーかばーかばーかばーかばーかばーかばーかばーかばーか。って言うのも忘れずに  
 
 
-## ハードウェア
+### ハードウェア
 あー、黙ってnRF52使ってください。今nRF51でやる必要は無いハズです。  
 全体のコストバランス見ようね。  
 
@@ -148,17 +150,19 @@ Nordicの 52-DKボードは国内の電波法の技適が通っていないた�
 
 
 
-## nRF52840
+### nRF52840
 USBも載りましたんで、もうnRF52840で行きましょう。そうしましょう。  
 
-## BLE over 6LoWPAN
+### nRF5340
+デュアルコアになって更に省電力でパワーアップ！！もうこれにしましょう。  
+
+### BLE over 6LoWPAN
  nRF5 SDK v17 からBLE 6LoWPANのサンプルが削除されました  
 
 
-## Bluetooth5
+### Bluetooth5
 データ長が決まったのを2Mbpsで高速に送るなら、低消費電力  
-そうじゃないなら、クラシックと変わらない  
-（データ送信し終わったら、ちゃんとsleepしよう）  
+そうじゃないなら、クラシックと変わらない。らしい。（データ送信し終わったら、ちゃんとsleepしよう）  
 
 なんだけど、結局 MCU内のハードウェア実装とStack内のソフトウェア実装に依存するんですよ・・・  
 アプリケーションからは命令を叩くだけだから・・・  
@@ -221,11 +225,11 @@ Zigbee
 どっちが良いのか  
 どっちもまだ低消費電力じゃないので人類には早すぎる！  
 
-## 個人的補足的メモ 
+### 個人的補足的メモ 
 要は、2.4GHzですよ。
 
 
-## BT5.1の追加機能について;
+### BT5.1の追加機能について;
 • Angle of Arrival / Angle of Departure  
 • Gatt caching  
 • Advertising channel index  
@@ -239,43 +243,43 @@ Gatt cachingもかなり有効に効いてます。
 BT5.2 で LE Audio が発表されました。  
 
 
-# Bluetooth SIG認証（最終製品登録）
+### Bluetooth SIG認証（最終製品登録）
 取得しなければならない。  
 
 Nordic semiの場合、MCUとSoftDeviceのバージョンそれぞれに応じてSIG認証を取っているので、選択するMCUとSoftDeviceのバージョンの組み合わせで申請する（んだと思う）  
 
 
-# ソフトウェアの開発環境
+## ソフトウェアの開発環境
 
-## Arm Mbed
+### Arm Mbed
 MbedOS / オンラインコンパイラ/MbedStudioで開発出来るみたいです（Bluetooth StackはCordio Stackになります）  
 
-## Arduino
+### Arduino
   Adafruit Feather nRF52 Bluefruit LEもGitHubにそれぞれパッケージとして上がってますので、こちらをArduino IDEにインストールすればいいです  
 
-[Adafruit Feather nRF52 Bluefruit LE](https://github.com/adafruit/Adafruit_nRF52_Arduino)  
+[ Adafruit Feather nRF52 Bluefruit LE ]  https://github.com/adafruit/Adafruit_nRF52_Arduino  
 
 
-## nRF5 SDK
+### nRF5 SDK
 本命はこちら。Nordic semiのSDK。だいたいこのSDKをラップしてArduinoで使えるようにしてあったりするのですが、最新バージョンのSDKはNordicからリリースされるので、Arduinoでのライブラリはちゃんと更新されれば良いのですが、コミュニティの動きに寄るのでその辺りは不透明です  
 
 IDEはKeil ARM-MDK / Segger Embedded Studio / IAR Embedded Workbench など Arm-cc / GCC-Toolchain  
 
-## nRF Connect SDK
+### nRF Connect SDK
 今やってる。なかなか良いよ。  
 
-## ちょっと良いところ
+### ちょっと良いところ
 どのソフトウェア環境で作成しても、ハードウェア構成が同じなら動きます。I2C / SPI / UARTのピン配置 は 固定ではなく、任意割り当てが基本的に可能なので  
 まぁ、UARTがFTDIとかDAP Linkとかに繋がってたらダメだと思いますけど。  
 逆に言うと、ピン割り当てが任意にできるので、GPIOで空いてるピンにI2CやSPIを割り当てたりできます。便利です  
 
-## ハードウェア実装
+### ハードウェア実装
 LED1個（抵抗も忘れずに）、GPIOボタン1個、リセットボタン１個、32KHzクリスタル（水晶振動子）がモジュールに実装されてない場合はそれも付けといて。  
 
-## ハードウェア(MCU)
+### ハードウェア(MCU)
 1年ごとにスペックは倍になります！  
 
-## ソフトウェア
+### ソフトウェア
 もう全部 nRF Connect SDKでいいや。  
 
 
@@ -284,12 +288,12 @@ LED1個（抵抗も忘れずに）、GPIOボタン1個、リセットボタン�
 
 
 
-# iOS13とか
+### iOS13とか
 iPhone7 以降の端末はiOS13 (13.2？もうアップデートしちゃったからよく分かんない)でATT MTUが185を越えて200byte以上のパケットも扱えるように（iOSデバイス内のコンボチップとファームウェアに依存します）。  
 
 nRF52が対向の場合、MTUは 247 - 3 = 244 まで扱えるので、そのくらいなら行けそう。とりあえず iPhone7（iOS13.2） <-> nRF52832 で 208byte パケットのやり取りが可能なことは確認。  
 
-# 電池持ちとスループット
+### 電池持ちとスループット
 
 電池(電源周りの設計)はハードウェア設計に依存します。nRF52832の場合はコンデンサは C3 まで載せた方がいいけど、その辺は選択するMCU依存なので、各MCUのボード設計がモジュールメーカー（Nordicのパートナー企業様）から出ているので、そちらを参考にしてください（参考にしてくださいというか、そのまま回路図を起こしてください）
 
@@ -298,11 +302,11 @@ nRF52が対向の場合、MTUは 247 - 3 = 244 まで扱えるので、そのく
 
 
 
-# スループットとかデータ長とか
+### スループットとかデータ長とか
 
 スループットとかデータ長とかコネクションインターバルとかは クライアント側（ iOS ）が決めますが、その際どこまで出るかとかは iOS デバイス内のコンボチップの性能に依存していると思われるので、最新でリリースされている iOS デバイスとエントリーモデルでリリースされている iOS デバイスとでは発揮される性能に差が生じる可能性があります  
 
-# サポート
+### サポート
 技術サポートを受けたいのであれば、サポートを受けられるように選択をしましょう。  
 
 
@@ -511,7 +515,7 @@ CONFIG_SENSOR=y
 CONFIG_MPU6050=y
 ```
 
-```main.c
+~~~c
 /* main.c - Application main entry point */
 
 /*
@@ -753,9 +757,10 @@ void main(void)
     }
 
 }
-```
+~~~
 
-```service/ble_mpu.h
+~~~c
+// ble_mpu.h
 /** @file
  *  @brief BAS Service sample
  */
@@ -791,11 +796,10 @@ void bmpu_notify(struct bt_conn* conn, u8_t *p_vals, u16_t len);
 #ifdef __cplusplus
 }
 #endif
-```
+~~~
 
-
-```ble_mpu.c
-/* main.c - Application main entry point */
+~~~c
+// ble_mpu.c
 
 /*
  * Copyright (c) 2015-2016 Intel Corporation
@@ -891,7 +895,7 @@ void bmpu_notify(struct bt_conn* conn, u8_t *p_vals, u16_t len)
     
     bt_gatt_notify(conn, &attrs[1], (u8_t *)mpu_vals, BT_BUF);
 }
-```
+~~~
 
 あとはLチカの時と同じように、west build / west flash 叩けば動きます。  
 
@@ -904,11 +908,10 @@ west flash
 BLE / Blutooth部分に至っては、prj.conf に設定を書くだけ。exchangeのトコだけは一部関数を呼びますが。  
 
 I²C などのセンサー周りさえしっかり押さえられればすごく楽チンぽんですよ。  
-[ソースコード](https://github.com/github-deden/zephyr_ble_mpu6050)はGitHubにアップロードしてあります。  
 
 Zephyr RTOSは 2019/04 現在 v1.14 までリリースされていて、このバージョンでLTSにもなっています（そしてみんなダイスキ・オープンソース！）   
 
-# Zephyr RTOS Programming ( I²C 編 )
+## Zephyr RTOS Programming ( I²C 編 )
 
 書こうかどうしようか迷ったけど書いとこか。  
 まぁ、ツラいよねっていうやつ。定番の。  
@@ -917,7 +920,7 @@ Zephyr RTOSは 2019/04 現在 v1.14 までリリースされていて、この�
 
 MPU6050のmain.c   
 
-```main.c
+~~~c
 /* main.c - Application main entry point */
 
 /*
@@ -1006,7 +1009,7 @@ void main(void)
         k_sleep(K_MSEC(1000));
     }
 }
-```
+~~~
 
 これ見た瞬間、アホか！！って思いますよね。  
 
@@ -1055,7 +1058,8 @@ Device Driver Model ( device.h )を利用すると、過度なカプセル化や
 
 $ZEPHYR_BASE/drivers/sensor 以下に書くのはSensorと同じ要領です。  
 
-```lsm9ds1.h
+~~~c
+//lsm9ds1.h
 /*
  * Copyright (c) 2016 Intel Corporation
  *
@@ -1100,7 +1104,7 @@ struct lsm9ds1_data {
 
 #endif /* ZEPHYR_DRIVERS_SENSOR_LSM9DS1_LSM9DS1_H_ */
 
-```
+~~~
 
 Sensorの時と違うのは  
 
@@ -1109,7 +1113,8 @@ struct lsm9ds1_api{}  の定義ですね。
 
 実装の.cコード  
 
-```lsm9ds1.c
+~~~c
+//lsm9ds1.c
 
 ・・・省略・・・
 
@@ -1128,7 +1133,7 @@ DEVICE_AND_API_INIT(lsm9ds1, CONFIG_LSM9DS1_NAME, lsm9ds1_init, &lsm9ds1_driver,
                     NULL, POST_KERNEL, CONFIG_SENSOR_INIT_PRIORITY,
                     &lsm9ds1_driver_api);
 
-```
+~~~
 
 samples/sensor/lsm9ds1  
 
@@ -1147,7 +1152,8 @@ zephyr_library_include_directories($ENV{ZEPHYR_BASE}/drivers/sensor/lsm9ds1)
 
 ```
 
-```main.c
+~~~c
+//main.c
 /*
  * Copyright (c) 2012-2014 Wind River Systems, Inc.
  *
@@ -1195,12 +1201,12 @@ void main(void)
 	}
 }
 
-```
+~~~
 
 ドライバを完全にカプセル化出来てないジャマイカ！！！って怒られたらSensorベースにして、そっと * voidを手渡しましょう。  
 その方が平和になると思います。  
 
-# Zephyr RTOSのちょっとなところ
+## Zephyr RTOSのちょっとなところ
 
 GUIのIDEはSegger Embedded Studioというのがありますが、開発する時の公式チュートリアル見てると west build / west flash あるいは ninja build / ninja flash が書かれています。  
 
@@ -1212,7 +1218,7 @@ nRF5 SDKのnRFgo Studioだとリセットピン出してなくてもフツーに
 Zephyr RTOSでビルドしたHexだとブートしません。  
 
 
-# 救世主 Segger Embedded Studio
+## 救世主 Segger Embedded Studio
 
 開発環境のOSをmacOSにしてしまったので、WindowsでKeil使わなくなりました。  
 
@@ -1223,7 +1229,7 @@ ZephyrのHexを焼いてすぐに文鎮になるわけではなく、電源を�
 
 なので、必ずSESでソフトウェア開発しながらIDEでHex(elf)をDownloadし、Verifyをかければリセットピン出してなくても大丈夫です。のハズ！！きっと！！  
 
-# それでもハマってしまったヒト向け
+## それでもハマってしまったヒト向け
 
 対象が nRF52832 / nRF52840 であるならですが、DAP Link書き込み器を用意してください。  
 で、nRF5 SDKでビルドしたHexを何か用意します。Lチカでもいいです。  
@@ -1231,18 +1237,18 @@ ZephyrのHexを焼いてすぐに文鎮になるわけではなく、電源を�
 それをDAP Link経由で書き込みます。１回 Zephyr RTOSのHexを書き込んだだけなら復活すると思います。  
 ２回以上 Zephyr RTOSで作ったHexを書き込んでるともう救えません。  
 
-Thingy:91を色々書き込んでたら変な領域に書き込んだらしく、もうKernelがね。ははは。  
+Thingy:91を色々書き込んでたら変な領域に書き込んだらしく、もうね。ははは。  
 
 
-# どうしようも無くなったら
+## どうしようも無くなったら
 
 １人で鳴いてるDCDCの静かな鳴き声を聞きましょう。  
 
-# なんとかする
+## なんとかする
 [DTS / DeviceTree and SOC Definitions](https://docs.zephyrproject.org/latest/application/index.html#custom-board-devicetree-and-soc-definitions) にカスタムな設定をしておいて、board.c を追加すればイケるかなぁと。  
 
-
-```board.c
+~~~c
+//board.c
 /*
  * Copyright (c) 2018 Nordic Semiconductor ASA.
  *
@@ -1351,20 +1357,22 @@ static int init(struct device *dev)
 
 
 SYS_INIT(init, PRE_KERNEL_1, CONFIG_KERNEL_INIT_PRIORITY_DEFAULT);
-```
+~~~
 
 SYS_INIT に NVIC_SystemReset(); を挟み込んで、リセットピンをreadしてみてリセットがかかるようにすれば起動してくると思いまする。  
 こんな事するならリセットピン最初から出そうぜ。  
 無条件に NVIC_SystemReset() すると永久にブートして来ないけどね。多分。  
 
-# Bus Fault で苦しむ
+## Bus Fault で苦しむ
 リセットネタはここまでにして、次は I²C などのセンサー周りで起きるどうしようもない BUS FAULTです。  
 これも CoolTermなどのコンソールをじーーーーっと眺めるしかないヤツですね。  
 要は、mainスレッドとセンサーが起動するスレッドが別(drivers/sensorに入ってる奴らね)な為、mainスレッドから叩けばイケんじゃね？って思ってやってみるけど、センサーによってはmainスレッドから叩いても BUS FAULT を眺めることがしばしば。で、どうするか。  
 
 とりあえず、I²C の初期化部分だけ init でやっといて、あとのレジスタ叩くトコからは mainスレッドからやっとけば、まぁ、良さそう・・・（だといいなぁ・・・トオイメをする）  
 
-```lsm9ds1.c
+~~~c
+//lsm9ds1.c
+
 int lsm9ds1_init(struct device *dev)
 {
     u32_t i2c_cfg = I2C_SPEED_SET(I2C_SPEED_STANDARD) | I2C_MODE_MASTER;
@@ -1395,7 +1403,7 @@ static const struct lsm9ds1_api lsm9ds1_driver_api = {
     .sensor_performance = lsm9ds1_sensor_performance,
     .initDone           = initDone,
 };
-```
+~~~
 
 もう好きに呼べますからね。  
 
@@ -1406,12 +1414,12 @@ static const struct lsm9ds1_api lsm9ds1_driver_api = {
 [Isuue / https://github.com/zephyrproject-rtos/zephyr/issues/17689](https://github.com/zephyrproject-rtos/zephyr/issues/17689) にあったわ。  
 センサー基板にLDOとか載ってたらもうautoだね。  
 
-とまぁ、ここまで書いておいてなんですが、Python3 / pip3 などのOSS仕草によってSESでプロジェクトが上手い事開けないとかいうので、もう I2Cもmain と同じディレクトリにしとけば良いんじゃ無いかな  
+とまぁ、ここまで書いておいてなんですが、Python3 / pip3 などのOSS仕草によってSESでプロジェクトが上手い事開けないとかいうので、もう I2Cもmain と同じディレクトリにしとけば良いんじゃ無いかな.  
 
 
 
 
-# Zephyr RTOS の 真のmain()
+## Zephyr RTOS の 真のmain()
 
 zephyr/kernel/init.c ですね。  
 
@@ -1424,7 +1432,7 @@ CONFIG_MULTITHREADING=n とするとマルチスレッドを無効に出来る�
 
 Sensorとかのデバイスはまた別スレッドとして device.c に \_\_device_init_start とか extern で定義されてて、それが linker-defs.h にあるから、この辺からboot時に別すれっどで起動するようになってんのかなぁ・・・わかんないなぁ・・・  
 
-# RTC
+## RTC
 Real Time Counterというらしい。  
 nRF52 の Zephyr RTOS では CONFIG\_・・・なんだっけ？ NRF_RTC1 がデフォルトで有効になっている。  
 NRF_RTC0 と NRF_RTC2 を使いたい場合はどうすれば良いのか分からない。しらない。ドキュメント見ても書いてない。しらんがな。(USE_RTC0 / USE_RTC2 とからしい？)  
@@ -1433,10 +1441,10 @@ k_cycle なんとか()を呼べばRTCのカウンター値を得られるらし�
 k_uptime_getなんとかを呼べばタイムスタンプが得られるらしい。  
 そんな感じらしい。  
 
-# SysTick（割り込み）
+## SysTick（割り込み）
 某んんんっ！OS ではかなり悩まされたヤツですが、これはデフォルトではOFFになっていますのでご安心下さい。Cortex-M3 か M4 から乗ってるヤツですね。  
 
-# Thread
+## Thread
 
 こっちが動くコード。  
 <img width="729" alt="スクリーンショット 2019-12-03 15.25.24.png" src="images/68747470733a2f2f71696974612d696d6167652d73746f72652e73332e61702d6e6f727468656173742d312e616d617a6f6e6177732e636f6d2f302f3430353134332f66633635636161362d646666372d353738372d383038392d3439363930633036643330372e706e67.png">
@@ -1489,7 +1497,7 @@ CONFIG_MAIN_THREAD_PRIORITY=7
 ```
 こうね。  
 
-# Ubuntu の場合
+## Ubuntu の場合
 
 ファームウェアのビルドと書き込みにはwestを使う。  
 
@@ -1521,7 +1529,7 @@ cmake でのプロジェクトの展開はできるけど、Ubuntuでninja flash
 
 きっと多分おそらく！！ぜふぁーのも色々なことが書かれているんだ！！きっと！！！そうに違いない！！！！  
 
-# と、ここまで書きましたが
+## と、ここまで書きましたが
 
 Zephyr OS はあくまでもLinux FoundationのオープンソースなProjectで、Nordic semi はOSSにコミットしつつ、その成果を nRF Connect SDK として ZephyrOS™️ を含む形で現在開発を進めています  
 それはとてもアグリーですね  
@@ -1548,28 +1556,28 @@ Nordicの次期 SDK である nRF Connect SDKは ZephyrOS™️ がベースな�
 ### アートワーク
 <img width="50%" alt="board" src="images/board.png">
 
-こんな感じ。  
-２層で出来ます。  
+こんな感じ。２層で出来ます。  
 
 回路図さえキチンと出来てしまえば、あとのボード図（アートワーク設計）では自動配線のボタン押すだけなので、とても簡単です。  
-
 
 基板の製作は Seeed（eは３つ）のFusionPCBとかにお願いすると良いです。  
 基板実装サービスも展開されていますので、もうそれはとても安心です。  
 
+きちんとモジュールメーカーが提供している資料をよく見て回路を引きましょう。それをやるだけです。  
+
 
 # Getting Started with CoreBluetooth on iOS
 
-<img width="50%" alt="throughput" src="images/throughput.png">  
-なんと iPad mini5とかをUSB接続して、Xcode でスループット測定とパケットキャプチャが同時にできちゃいます。  
-画期的ですね。  
+<img width="90%" alt="throughput" src="images/throughput.png">  
+なんと iPad mini5とかをUSB接続して、Xcode でスループット測定とパケットキャプチャが同時にできちゃいます。画期的ですね。  
 
 ## CoreBluetooth
 
 
 接続状態を管理する Manager クラス  
 
-```BT_Manager.swift
+~~~swift
+// BT_Manager.swift
 //
 //  BTManager.swift
 //
@@ -1591,9 +1599,6 @@ class BTManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate
 {
     
     static let shared:BTManager = BTManager()
-    
-    //dice service uuid: "2A680001-0BC1-4689-AC07-8153AF8868C9"
-    
 
     let serviceUUIDs:Array<CBUUID>? = [ CBUUID.init(string: "B5570001-8D38-4C97-972A-5AD5E9EAA182"), ]
     
@@ -1680,13 +1685,12 @@ class BTManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate
     }
 
 }
-
-
-```
+~~~
 
 データのやりとりを管理する Peripheralのクラス  
 
-```BT_Peripheral.swift
+~~~swift
+// BT_Peripheral.swift
 //
 //  BT_NegiPeripheral.swift
 //  BT_NegiPeripheral
@@ -1706,7 +1710,8 @@ import CoreBluetooth
 class BT_Peripheral: NSObject, CBPeripheralDelegate {
     var peripheral:CBPeripheral! = nil
         
-    let notifyCharacteristicUUID:Array<CBUUID>! = [ CBUUID(string: "B5570002-8D38-4C97-972A-5AD5E9EAA182"), ]
+    let notifyCharacteristicUUID:Array<CBUUID>! =
+          [ CBUUID(string: "B5570002-8D38-4C97-972A-5AD5E9EAA182"), ]
     
     weak var delegate:BT_PeripheralDelegate?
     
@@ -1714,16 +1719,20 @@ class BT_Peripheral: NSObject, CBPeripheralDelegate {
         self.peripheral.delegate = self
     }
     
-    func peripheral(_ peripheral: CBPeripheral, didDiscoverServices error: Error?) {
+    func peripheral(_ peripheral: CBPeripheral, 
+                         didDiscoverServices error: Error?) {
+    
         for service:CBService in peripheral.services! {
             
-            
-            peripheral.discoverCharacteristics(notifyCharacteristicUUID, for: service)
+            peripheral.discoverCharacteristics(notifyCharacteristicUUID,
+                                                  for: service)
             print("service found")
         }
     }
     
-    func peripheral(_ peripheral: CBPeripheral, didDiscoverCharacteristicsFor service: CBService, error: Error?) {
+    func peripheral(_ peripheral: CBPeripheral, 
+              didDiscoverCharacteristicsFor service: CBService, error: Error?) {
+              
         for characteristic:CBCharacteristic in service.characteristics! {
             //print(characteristic.uuid)
             for uuid in notifyCharacteristicUUID {
@@ -1769,9 +1778,11 @@ class BT_Peripheral: NSObject, CBPeripheralDelegate {
     }
     
 }
-
-```
+~~~
 
 こんな感じ。  
 
+# つまり
+MacBook pro が１台あれば、基板設計からファームウェア、BLEアプリケーションまで全て Macintosh で開発ができちゃいます！！！これはとても素晴らしいことです！！！
 
+nRFマイコンはいいぞ！！
