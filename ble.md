@@ -1541,10 +1541,10 @@ Nordicの次期 SDK である nRF Connect SDKは ZephyrOS™️ がベースな�
 好きなのを選びます。KiCAD / EAGLE / ｱﾙﾃｨｳﾑ（高い） MCUのライブラリがあれば出来ます  
 
 ### 回路図
-<img width="50%" alt="curcit" src="images/curcit.png">
+<img alt="curcit" src="images/curcit.png">
 
 ### アートワーク
-<img width="50%" alt="board" src="images/board.png">
+<img alt="board" src="images/board.png">
 
 こんな感じ。  
 ２層で出来ます。  
@@ -1555,11 +1555,14 @@ Nordicの次期 SDK である nRF Connect SDKは ZephyrOS™️ がベースな�
 
 # Getting Started with CoreBluetooth on iOS
 
-<img width="50%" alt="throughput" src="images/throughput.png">
+<img width="50%" alt="throughput" src="images/throughput.png">  
 なんと iPad mini5とかをUSB接続して、Xcode でスループット測定とパケットキャプチャが同時にできちゃいます。  
 画期的ですね。  
 
 ## CoreBluetooth
+
+
+接続状態を管理する Manager クラス  
 
 ```BT_Manager.swift
 //
@@ -1675,6 +1678,8 @@ class BTManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate
 
 
 ```
+  
+データのやりとりを管理する Peripheralのクラス  
 
 ```BT_Peripheral.swift
 //
