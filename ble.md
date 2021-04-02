@@ -1544,10 +1544,13 @@ Nordicの次期 SDK である nRF Connect SDKは ZephyrOS™️ がベースな�
 <img alt="curcit" src="images/curcit.png">
 
 ### アートワーク
-<img alt="board" src="images/board.png">
+<img width="50%" alt="board" src="images/board.png">
 
 こんな感じ。  
 ２層で出来ます。  
+  
+回路図さえキチンと出来てしまえば、あとのボード図（アートワーク設計）では自動配線のボタン押すだけなので、とても簡単です。  
+  
 
 基板の製作は Seeed（eは３つ）のFusionPCBとかにお願いすると良いです。  
 基板実装サービスも展開されていますので、もうそれはとても安心です。  
