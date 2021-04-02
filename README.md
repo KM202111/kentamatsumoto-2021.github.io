@@ -9,8 +9,9 @@
 - BLEと6軸センサー
 - お店
   
-### BLEのお話
-  - だいたいざっくりBLE / nRF5 SDK / nRF Connect SDK をまとめた感じのヤツはローカルPCの中
-
+### お話
+  - [びーえるいー](https://www.chocbanana.com/ble)
+  - [あいおーてぃー](https://www.chocbanana.com/nrf91)
+  
 ### [めも](https://dedendendeden.blogspot.com)  
 
