@@ -1208,7 +1208,7 @@ void main(void)
 ~~~
 
 ドライバを完全にカプセル化出来てないジャマイカ！！！って怒られたらSensorベースにして、そっと * voidを手渡しましょう。  
-その方が平和になると思います。  
+その方が平和になると思います。こういう仕草は Simba RTOSとかをよく見て勉強をしましょう。  
 
 ## Zephyr RTOSのちょっとなところ
 
@@ -1421,7 +1421,7 @@ static const struct lsm9ds1_api lsm9ds1_driver_api = {
 
 とまぁ、ここまで書いておいてなんですが、Python3 / pip3 などのOSS仕草によってSESでプロジェクトが上手い事開けないとかいうので、もう I2Cもmain と同じディレクトリにしとけば良いんじゃ無いかな.  
 
-
+macOS Big Sur・・・ じゃないか、Xcode12.4 に含まれる macOS SDKのバージョンが新し過ぎて、SESでプロジェクト開くとエラーになるとかいうのを見てると、I2Cもmain と同じディレクトリにしとけば良いのかなって思います。  
 
 
 ## Zephyr RTOS の 真のmain()
@@ -1536,10 +1536,11 @@ cmake でのプロジェクトの展開はできるけど、Ubuntuでninja flash
 
 ## と、ここまで書きましたが
 
-Zephyr OS はあくまでもLinux FoundationのオープンソースなProjectで、Nordic semi はOSSにコミットしつつ、その成果を nRF Connect SDK として ZephyrOS™️ を含む形で現在開発を進めています  
+ZephyrOS™️ はあくまでもLinux FoundationのオープンソースなProjectで、Nordic semi はOSSにコミットしつつ、その成果を nRF Connect SDK として ZephyrOS™️ を含む形で現在開発を進めています  
 それはとてもアグリーですね  
 
-Nordicの次期 SDK である nRF Connect SDKは ZephyrOS™️ がベースなので、Zephyrをちゃんと勉強しておきましょう。  
+Nordicの次期 SDK である nRF Connect SDKは ZephyrOS™️ がベースなので、Zephyrをちゃんと勉強しておきましょう。NCSはZephyr版を使うか、SoftDeviceController版を使うか選択しますね。  
+
 それはとてもアグリーです  
 
 
@@ -1574,6 +1575,7 @@ Nordicの次期 SDK である nRF Connect SDKは ZephyrOS™️ がベースな�
 # Getting Started with CoreBluetooth on iOS
 
 <img width="90%" alt="throughput" src="images/throughput.png">  
+
 なんと iPad mini5とかをUSB接続して、Xcode でスループット測定とパケットキャプチャが同時にできちゃいます。画期的ですね。  
 
 ## CoreBluetooth
@@ -1643,8 +1645,7 @@ class BTManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate
     }
     
     private func start(){
-        
-        
+ 
         manager.scanForPeripherals(withServices: serviceUUIDs, options: nil) //[advUUID]
         print("start scan")
     }
@@ -1709,7 +1710,6 @@ import CoreBluetooth
 
 @objc protocol BT_PeripheralDelegate {
     func peripheral_Data( value:NSData )->Void
-    func peripheral_MPU9250Data( value:NSData )->Void
 }
 
 class BT_Peripheral: NSObject, CBPeripheralDelegate {
@@ -1785,7 +1785,7 @@ class BT_Peripheral: NSObject, CBPeripheralDelegate {
 }
 ~~~
 
-こんな感じ。  
+こんな感じ。CoreBluetoothの資料はWebにたくさんあるので、そう困らないですね。Appleのドキュメントも充実してますし  
 
 # つまり
 MacBook pro が１台あれば、基板設計からファームウェア、BLEアプリケーションまで全て Macintosh で開発ができちゃいます！！！これはとても素晴らしいことです！！！
