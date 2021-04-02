@@ -1,5 +1,5 @@
-# Bluetooth 的メモ
-殴り書きなところもありますが、勘弁して。  
+# Bluetooth 2021-04-02 までの備忘録
+
 
 ## BLE4.0からの流れ
 Bluetooth LE(以下BLEと表記)4.0 〜 4.2 まで  
@@ -22,7 +22,7 @@ Bluetooth3 までのを含むモジュールの場合、Dual mode。BLEだけの
 スマフォ・タブレットと繋げるというのがBluetooth - BLEの役割  
 
 ### メモ
-Bluetooth3まではSPPとかだったけど、BLEの場合はGATT Profileベース  
+Bluetooth3まではSPPとかだったけど、BLEの場合はGATTベース  
 データ構造を任意に定義できるようになった  
 MAX 20byte(octet)まで送受信可能  
 
@@ -41,9 +41,9 @@ Notification / Indicationでは出来ない -順不同になる-
 特に、コンカレントな接続で複数デバイス接続するともう順番ぐちゃぐちゃになるます。  
 
 BLE4.2 で ATT MTU Exchange を使用することにより、247オクテットまでは拡張できるようになった。  
- ただしアプリケーションより下のレイヤーでパケットが分割（L2Capだと・・・なんだろ？フレーム？）されて送信されたりするし、その辺りは物理層とSoftDeviceなどの下位レイヤーの実装に依る。  
+ ただしアプリケーションより下のレイヤーでパケットが分割（L2CAPだと・・・なんだろ？フレーム？）されて送信されたりするし、その辺りは物理層とSoftDeviceなどの下位レイヤーの実装に依る。  
 あと、デバイスでMTUを247にしてもiOSとのMTU交換時にiOS側が決めるので、iOSのバージョンによっては185になったりします。  
-そうなると結局中途半端なので、データ長は128ごとに区切った方が良いです。でも結局GATT Clientでデータはくっ付けるので、データ長が分かれば受信側の最大長のData Lengthで送信しておけばいいです  
+そうなると結局中途半端なので、データ長は128など区切りのいいとこで区切るか、もしくはGATT Clientでデータはくっ付けるので、データ長が分かれば受信側の最大長のData Lengthで送信しておけばいいです  
 
 
 Readの時にGATT Characteristicの読み込み（複数Readしていると）処理が追いつかないよ！？  
@@ -85,15 +85,11 @@ GATT Server / GATT Client
 Security Manager  
    BLEではペアリングは無い・・・という解説を見かけたりすることもありますが、スマートフォンとBLEデバイスを１対１で接続する場合にペアリング（及びボンディング）した後、接続させる事もできます。  
    その際に鍵の交換などの処理を司っているのがSecurity Managerになります。  
+   NFCを利用したOOBペアリングというのもあります。  
 
 ANCS(Apple Notification Center Service)  
    スマフォ(iPhone/iPad)・BLEデバイス連携でよくある、スマフォ(iPhone/iPad)の通知情報をBLEデバイスに伝える仕組み・・・ですが、これは少々特殊で、iPhoneとBLEデバイスが両方Peripheral Roleです。  
    つまり、Roleとしては両方PeripheralですがGATT ServerとGATT Clientが逆になっている・・・ということです。  
-
-寝てホラ  
-　基本、間欠通信です。つまり、接続はよく切れます。接続性よりもバッテリーが命なので、とにかく寝るのが基本です。  
-繋がった時にデータの送受信が出来れば良い・・・という設計をしないとダメだと思います。  
-
 
 # Bluetooth 5
 2018年 3月時点での話のまとめ  
@@ -101,7 +97,7 @@ ANCS(Apple Notification Center Service)
 Nordic semiの場合、nRF51822 及び nRF52xxx  
 SoftDevice駆動。工藤ちゃうで駆動やで。  
 
-nRF51/52共、BLEの電波以外の電波も吹けます。ANT+ とか MicrobitみたいにRadio（無線）とか
+nRF51/52共、BLEの電波以外の電波も吹けます。ANT+ とか micro:bitみたいにRadio（無線）とか
 nRF52840は 802.15.4 も対応  
 
 大雑把にまとめると  
@@ -154,7 +150,7 @@ Nordicの 52-DKボードは国内の電波法の技適が通っていないた�
 USBも載りましたんで、もうnRF52840で行きましょう。そうしましょう。  
 
 ## BLE over 6LoWPAN
- nRF5 SDK v17 からサンプルが削除されました  
+ nRF5 SDK v17 からBLE 6LoWPANのサンプルが削除されました  
 
 
 ## Bluetooth5
@@ -163,7 +159,7 @@ USBも載りましたんで、もうnRF52840で行きましょう。そうしま
 （データ送信し終わったら、ちゃんとsleepしよう）  
 
 なんだけど、結局 MCU内のハードウェア実装とStack内のソフトウェア実装に依存するんですよ・・・　　
-　　
+アプリケーションからは命令を叩くだけだから・・・  　　
 
 
 Long Range  
@@ -171,7 +167,7 @@ Long Range
 低スループット  
 電波の回り込み  
 繋がりにくかったとこに繋がるように、がLong Rangeの目的  
-Nordic測定で、室内で色々壁とかにぶち当たって80m くらい  
+Nordic測定で、室内で色々壁とかにぶち当たって80m くらいだって。  
 
 Advertising Extensions  
 アホやろ・・・（アドバタイズメント・パケットを255オクテットまで拡張出来るようになったので、6軸センサーのデータをブロードキャストのパケットに含む事が出来たりします。が、アドバタイズを20msで送信するならともかく、1sec固定でやったらセンシングにならんやろ・・・ってなります。あとプライバシー。パケット暗号化せず更にブロードキャストとか正気か？？？って話です）  
@@ -240,13 +236,11 @@ BT5.1 で Periodic Advertising Sync Transfer（定期的なアドバタイジン
 Gatt cachingもかなり有効に効いてます。  
 BT5.2 で LE Audio が発表されました。  
 
+
 # Bluetooth SIG認証（最終製品登録）
 取得しなければならない。  
   
 Nordic semiの場合、MCUとSoftDeviceのバージョンそれぞれに応じてSIG認証を取っているので、選択するMCUとSoftDeviceのバージョンの組み合わせで申請する（んだと思う）  
-
-
-
 
 
 # ソフトウェアの開発環境
@@ -257,7 +251,7 @@ MbedOS / オンラインコンパイラ/MbedStudioで開発出来るみたいで
 ## Arduino
   Adafruit Feather nRF52 Bluefruit LEもGitHubにそれぞれパッケージとして上がってますので、こちらをArduino IDEにインストールすればいいです  
 
-[Adafruit Feather nRF52 Bluefruit LE] https://github.com/adafruit/Adafruit_nRF52_Arduino  
+[Adafruit Feather nRF52 Bluefruit LE] (https://github.com/adafruit/Adafruit_nRF52_Arduino)  
 
 
 ## nRF5 SDK
@@ -265,7 +259,7 @@ MbedOS / オンラインコンパイラ/MbedStudioで開発出来るみたいで
 
 IDEはKeil ARM-MDK / Segger Embedded Studio / IAR Embedded Workbench など Arm-cc / GCC-Toolchain  
 
-## Zephyr RTOS
+## nRF Connect SDK
 今やってる。なかなか良いよ。  
 
 ## ちょっと良いところ
@@ -280,10 +274,7 @@ LED1個（抵抗も忘れずに）、GPIOボタン1個、リセットボタン�
 1年ごとにスペックは倍になります！  
 
 ## ソフトウェア
-もう全部 ぜふぁーでいいや。  
-
-# ぜふぁーぜふぁー
-ぜふぁー  
+もう全部 nRF Connect SDKでいいや。  
 
 # iOS13とか
 iPhone7 以降の端末はiOS13 (13.2？もうアップデートしちゃったからよく分かんない)でATT MTUが185を越えて200byte以上のパケットも扱えるように（iOSデバイス内のコンボチップとファームウェアに依存します）。  
@@ -298,7 +289,10 @@ nRF52が対向の場合、MTUは 247 - 3 = 244 まで扱えるので、そのく
 
 # スループットとかデータ長とか
 
-スループットとかデータ長とかコネクションインターバルとかは クライアント側（ iOS ）が（細かいとこは説明省くけど）決めますが、その際どこまで出るかとかは iOS デバイス内のコンボチップの性能に依存していると思われるので、最新でリリースされている iOS デバイスとエントリーモデルでリリースされている iOS デバイスとでは発揮される性能に差が生じる可能性があります  
+スループットとかデータ長とかコネクションインターバルとかは クライアント側（ iOS ）が決めますが、その際どこまで出るかとかは iOS デバイス内のコンボチップの性能に依存していると思われるので、最新でリリースされている iOS デバイスとエントリーモデルでリリースされている iOS デバイスとでは発揮される性能に差が生じる可能性があります  
+
+# サポート
+技術サポートを受けたいのであれば、サポートを受けられるように選択をしましょう。  
 
 
 
@@ -309,7 +303,7 @@ nRF52が対向の場合、MTUは 247 - 3 = 244 まで扱えるので、そのく
 
 
 ### Installing the SDK  
-Noridc semi. のWebサイトから SDKの Zipファイル nRF5_SDK_x.x.x_xxxxxxx.zip (for example, nRF5_SDK_v17.0.2_1a2b3c4.zip) と併せて使用するSoftDeviceをダウンロードします。  
+Nordic semi. のWebサイトから SDKの Zipファイル nRF5_SDK_x.x.x_xxxxxxx.zip (for example, nRF5_SDK_v17.0.2_1a2b3c4.zip) と併せて使用するSoftDeviceをダウンロードします。  
 SoftDeviceは利用する nRF52 MCUの種類とSoftDeviceが対応している機能によって S112, S113, S132, S140 などを適宜選択します。  
   
 ダウンロードできたらzipファイルは任意の場所に展開します（スペースを含むフォルダに展開しない方がいいかも知れません）  
@@ -317,230 +311,12 @@ SoftDeviceは利用する nRF52 MCUの種類とSoftDeviceが対応している�
 アプリケーション開発に使用できる IDE（統合開発環境）は Keil ARM MDK, IAR, Segger embedded studio(こちらは Nordic editionもあります) などがありますので、好きな IDE を選ぶことが可能です。  
 
 
-
-
-
-```I2C twi_func.c
-#include "twi_func.h"
-
-#include "nrf_delay.h"
-#include "boards.h"
-#include "nrf_drv_twi.h"
-#include "nrf_gpio.h"
-
-#include "app_util_platform.h"
-#include "app_error.h"
-
-
-/* TWI instance ID. */
-#define TWI_INSTANCE_ID      0
-#define I2C_ADDR             0x68
-
-/* Indicates if operation on TWI has ended. */
-static volatile bool m_xfer_done = false;
-
-/* TWI instance. */
-static const nrf_drv_twi_t m_twi = NRF_DRV_TWI_INSTANCE(TWI_INSTANCE_ID);
-
-/**
- * @brief TWI events handler.
- */
-static void twi_handler(nrf_drv_twi_evt_t const * p_event, void * p_context)
-{
-	m_xfer_done = true;
-//    switch (p_event->type)
-//    {
-//        case NRF_DRV_TWI_EVT_DONE:
-//            m_xfer_done = true;
-//            break;
-//        default:
-//            break;
-//    }
-}
-
-
-void twi_init()
-{
-    ret_code_t err_code;
-
-    const nrf_drv_twi_config_t twi_config = {
-        .scl                = ARDUINO_SCL_PIN,  //27
-        .sda                = ARDUINO_SDA_PIN,  //26
-        .frequency          = NRF_TWI_FREQ_100K,
-        .interrupt_priority = APP_IRQ_PRIORITY_HIGH,
-        .clear_bus_init = false
-    };
-
-    err_code = nrf_drv_twi_init(&m_twi, &twi_config, twi_handler, NULL);
-    APP_ERROR_CHECK(err_code);
-
-    nrf_drv_twi_enable(&m_twi);
-}
-
-
-int twi_read_reg(uint8_t reg, uint8_t *data, uint32_t length)
-{
-
-  char data_[length];
-  char data_write[1];
-  data_write[0] = reg;
-
-  m_xfer_done = false;
-  APP_ERROR_CHECK( nrf_drv_twi_tx(&m_twi, I2C_ADDR, (uint8_t *)data_write, sizeof(data_write), true) ); //no stop
-  while (m_xfer_done == false) { __WFE(); }
-
-  nrf_delay_ms(1);
-
-  m_xfer_done = false;
-  APP_ERROR_CHECK( nrf_drv_twi_rx(&m_twi, I2C_ADDR, (uint8_t *)&data_, length) );
-  while (m_xfer_done == false) { __WFE(); }
-
-  nrf_delay_ms(2);
-
-  for(int i = 0; i < length; i++) {
-    data[i] = data_[i];
-  }
-	
-	return NRF_SUCCESS;
-}
-
-int twi_write_reg(uint8_t reg, uint8_t *data, uint32_t length)
-{
-
-	uint8_t tx_data[(length+1)];
-
-	tx_data[0] = reg;
-	memcpy(&tx_data[1], data, length);
-	
-  m_xfer_done = false;
-  APP_ERROR_CHECK( nrf_drv_twi_tx(&m_twi, I2C_ADDR, tx_data, sizeof(tx_data), true) ); //no stop
-  while (m_xfer_done == false) { __WFE(); }
-
-  nrf_delay_ms(1);
-
-  return NRF_SUCCESS;
-}
-
-```
-
-```I2C main.c
-/**
- * Copyright (c) 2015 - 2017, Nordic Semiconductor ASA
- * 
- * All rights reserved.
- * 
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- * 
- * 1. Redistributions of source code must retain the above copyright notice, this
- *    list of conditions and the following disclaimer.
- * 
- * 2. Redistributions in binary form, except as embedded into a Nordic
- *    Semiconductor ASA integrated circuit in a product or a software update for
- *    such product, must reproduce the above copyright notice, this list of
- *    conditions and the following disclaimer in the documentation and/or other
- *    materials provided with the distribution.
- * 
- * 3. Neither the name of Nordic Semiconductor ASA nor the names of its
- *    contributors may be used to endorse or promote products derived from this
- *    software without specific prior written permission.
- * 
- * 4. This software, with or without modification, must only be used with a
- *    Nordic Semiconductor ASA integrated circuit.
- * 
- * 5. Any software provided in binary form under this license must not be reverse
- *    engineered, decompiled, modified and/or disassembled.
- * 
- * THIS SOFTWARE IS PROVIDED BY NORDIC SEMICONDUCTOR ASA "AS IS" AND ANY EXPRESS
- * OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY, NONINFRINGEMENT, AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL NORDIC SEMICONDUCTOR ASA OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
- * GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
- * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
- */
-/** @file
- * @defgroup tw_sensor_example main.c
- * @{
- * @ingroup nrf_twi_example
- * @brief TWI Sensor Example main file.
- *
- * This file contains the source code for a sample application using TWI.
- *
- */
-
-
-#include "nrf_delay.h"
-//#include "nrf_drv_clock.h"
-
-#include "twi_func.h"
-#include "deviceIcm20948EMD.h"
-
-#include "nrf_log.h"
-#include "nrf_log_ctrl.h"
-#include "nrf_log_default_backends.h"
-
-//static void lfclk_request(void)
-//{
-//    uint32_t err_code = nrf_drv_clock_init();
-//    APP_ERROR_CHECK(err_code);
-//    nrf_drv_clock_lfclk_request(NULL);
-//}
-
-/**
- * @brief Function for main application entry.
- */
-int main(void)
-{
-//	  lfclk_request();
-    APP_ERROR_CHECK(NRF_LOG_INIT(NULL));
-    NRF_LOG_DEFAULT_BACKENDS_INIT();
-
-//    nrf_delay_ms(5000);
-
-    NRF_LOG_DEBUG("");
-    NRF_LOG_INFO("\r\nICM-20948 sensor example");
-    NRF_LOG_FLUSH();
-    
-    twi_init();
-
-    NRF_LOG_INFO("\r\nTWI Init done.");
-    NRF_LOG_FLUSH();
-    
-    nrf_delay_ms(100);
-    int rc = 0;
-    rc = setup_hoge();
-
-    NRF_LOG_INFO("\r\nsetup: %d", rc);
-    NRF_LOG_FLUSH();
-    nrf_delay_ms(100);
-
-    while (true)
-    {
-//        nrf_delay_ms(100);
-        get_sample();
-//        example();
-
-        NRF_LOG_FLUSH();
-//        __WFE();
-    }
-}
-
-/** @} */
-```
-
-ICM-20948 のDMPをI2C で動かすコードの抜粋です  
 printf みたいな標準出力マクロの NRF_LOG_INFO で頑張ります  
+floatを出力する時はハマりますので頑張ってください  
 
 ```
 NRF_LOG_INFO("  X: " NRF_LOG_FLOAT_MARKER "", NRF_LOG_FLOAT(event->data.quaternion.quat[0]));
 ```
-
-floatを出力する時はハマりますので頑張ってください
 
 ### nRF5 SDK の BLE のサンプル
 ble_app_uart のプロジェクトを丸ごとコピーして、それをベースに作ります。 BLEのService / Characteristicsも併せて設計し直します  
