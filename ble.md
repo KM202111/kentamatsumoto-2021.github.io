@@ -28,19 +28,19 @@ Bluetooth3 までのを含むモジュールの場合、Dual mode。BLEだけの
 ### メモ
 **Bluetooth3まではSPPとかだったけど、BLEの場合はGATTベース**  
 **データ構造を任意に定義できるようになった**  
-**MAX 20byte(octet)まで送受信可能**  
+**基本的にはMAX 20byte(octet)まで送受信可能**  
 
 **Peripheral Role でのアドバタイズのUUIDはビッグエンディアン（CentralからScanする際はPeripheralのadv UUIDを反転させてscanさせないとデバイスが見えない）**  
 
 **GATTのRead / Notification / Indication それぞれどう振る舞う？**  
-   - (ReadはGATT Clientから読む。NotificationはGATT Serverから送る。IndicationはNotification + ACK。IndicationはACK返すだけ)  
+   - ReadはGATT Clientから読む。NotificationはGATT Serverから送る。IndicationはNotification + ACK。IndicationはACK返すだけ  
 
 **Read時にサービスから読み込むGATT Characteristicの順番はどうなっている？**  
 
    - Characteristics を先にくっ付けた順番 (GattCharacteristic *ControllerChars[] = { &accelChar, &writeChar, };) で読まれる。Notificationの時も最初にくっ付けたcharacteristicが多く来る・・・のかな？)  
 
 **BLEって、クラシックBluetoothのSPPみたいにシリアル通信できないの？**  
-　- （iOSをClientにして、dispatch_queue_t centralQueue = dispatch_queue_create("hoge.fuga", DISPATCH_QUEUE_SERIAL); としてSerialQueueにしてReadすれば出来る。  
+　- iOSをClientにして、dispatch_queue_t centralQueue = dispatch_queue_create("hoge.fuga", DISPATCH_QUEUE_SERIAL); としてSerialQueueにしてReadすれば出来る。  
  - Notification / Indicationでは出来ない -順不同になる-   
  - 特に、コンカレントな接続で複数デバイス接続するともう順番ぐちゃぐちゃになるます。  
 
@@ -49,12 +49,12 @@ Bluetooth3 までのを含むモジュールの場合、Dual mode。BLEだけの
  - あと、デバイスでMTUを247にしてもiOSとのMTU交換時にiOS側が決めるので、iOSのバージョンによっては185になったりします。  
  - そうなると結局中途半端なので、データ長は128など区切りのいいとこで区切るか、もしくはGATT Clientでデータはくっ付けるので、データ長が分かれば受信側の最大長のData Lengthで送信しておけばいいです  
 
-
 **Readの時にGATT Characteristicの読み込み（複数Readしていると）処理が追いつかないよ！？**  
-   - (ReadするCharacteristicの数を減らすか、複数のPeripheralに分けましょう。)  
+
+   - ReadするCharacteristicの数を減らすか、複数のPeripheralに分けましょう。  
 
 **センサーが速すぎて、BLEのコネクションインターバル内に収まらない**  
-　- （512Hzとかのセンサーをくっ付けると、コネクションインターバルの最小値7.5msで追いつけないので、配列や構造体に複数サンプル載せましょう。）  
+　- 512Hzとかのセンサーをくっ付けると、コネクションインターバルの最小値7.5msで追いつけないので、配列や構造体に複数サンプル載せましょう。  
 
 **開発中にGATTを変えると、iPhoneのBluetoothをオン・オフしないとダメだけど、service changedっていうCharacteristicもあるようです。**  
 　- でもペアリングしていると、ペアリング情報を削除してBTをオン・オフしないとダメなので、微妙です。もう、BTオン・オフすれば良いんじゃないかな・・・。  
@@ -72,7 +72,6 @@ Bluetooth3 までのを含むモジュールの場合、Dual mode。BLEだけの
    - めっちゃ大雑把に。鍵交換をするのがペアリング。鍵を保存するのがボンディング（っていうらしいです）  
    - 両方を含めた意味で、ペアリングと呼ぶことが多いらしいです。  
 
-
 **GAPとGATT**  
 
 **GAP**  
@@ -80,7 +79,7 @@ Bluetooth3 までのを含むモジュールの場合、Dual mode。BLEだけの
 
 **GATT**  
 　- データの定義と振る舞いを任意に設定できます。  
-　- Bluetooth SIGによってあらかじめ決められた16bit UUIDのプロファイルもありますが、開発者が加速度センサーなどを繋いでスマートフォンなどにセンサー値を送信したりする時、任意のデータ構造とRead/Write/Notification/Indicationなどの振る舞いを設定できるのが GATTプロファイルになります(128bit UUIDね)。  
+　- Bluetooth SIGによってあらかじめ決められた16bit UUIDのプロファイルもありますが、開発者が加速度センサーなどを繋いでスマートフォンなどにセンサー値を送信したりする時、任意のデータ構造とRead/Write/Notification/Indicationなどの振る舞いを設定できるのが GATTになります(128bit UUIDね)。  
 
 **GATT Server / GATT Client**  
    - データを持っている方がサーバー。データを受け取る方がクライアント。  
@@ -89,7 +88,7 @@ Bluetooth3 までのを含むモジュールの場合、Dual mode。BLEだけの
 
 
 **Security Manager**  
-   - BLEではペアリングは無い・・・という解説を見かけたりすることもありますが、スマートフォンとBLEデバイスを１対１で接続する場合にペアリング（及びボンディング）した後、接続させる事もできます。  
+   - BLEではペアリングは無い・・・という解説を見かけたりすることもありますが、スマートフォンとBLEデバイスを１対１で接続する場合にペアリング（及びボンディング）させる事もできます。  
    - その際に鍵の交換などの処理を司っているのがSecurity Managerになります。  
    - NFCを利用したOOBペアリングというのもあります。  
 
@@ -151,8 +150,6 @@ Nordic nRF52-DK
 Nordicの 52-DKボードは国内の電波法の技適が通っていないため、電波暗室などでなら使えますが通常の場所では電波法違反になるので使わないでください  
 
 某秋月電子で販売されている AE-TYBLE16 は nRF51822 なので nRF5 SDKは 12 までしか対応しておりません。nRF51822はLEDを点灯させるために FETを別途繋がないと 0.5mA までしかドライブ出来ませんのでご注意ください。あとSWO・・・  
-
-
 
 ### nRF52840
 USBも載りましたんで、もうnRF52840で行きましょう。そうしましょう。  
@@ -290,8 +287,6 @@ LED1個（抵抗も忘れずに）、GPIOボタン1個、リセットボタン�
 どうやら nRF Connect SDK v1.5.0 から nRF52 のサポートも入ったっぽい（ように見える）んですよね・・・  
 
 
-
-
 ### iOS13とか
 iPhone7 以降の端末はiOS13 (13.2？もうアップデートしちゃったからよく分かんない)でATT MTUが185を越えて200byte以上のパケットも扱えるように（iOSデバイス内のコンボチップとファームウェアに依存します）。  
 
@@ -303,8 +298,6 @@ nRF52が対向の場合、MTUは 247 - 3 = 244 まで扱えるので、そのく
 
 スループットも10KB/secは出ます。最新のiPadで20KB/secくらいだったかなぁ・・・（ここうろ覚え  
 次の nRF5340 はデュアルコアでネットワークコアがあるので更に省電力に！とても楽しみ！！  
-
-
 
 ### スループットとかデータ長とか
 
@@ -354,7 +347,7 @@ ble_app_uart のプロジェクトを丸ごとコピーして、それをベー�
 
 1. MbedOS <- ツラい  
 2. Arduino <- （わからない  
-3. Nordic SDK <- ﾁｮｯﾄﾃﾞｷﾙけど、とてもツラい  
+3. nRF5 SDK <- ﾁｮｯﾄﾃﾞｷﾙけど、とてもツラい  
   
 
 これからはZephyrだ！！！！  
@@ -908,7 +901,7 @@ west flash
 
 イゴイタ。  
 
-やってみたら、めちゃくちゃ直感的でNordic SDKよりもはるかにコード量が少なくなります。
+やってみたら、めちゃくちゃ直感的でnRF5 SDKよりもはるかにコード量が少なくなります。
 BLE / Blutooth部分に至っては、prj.conf に設定を書くだけ。exchangeのトコだけは一部関数を呼びますが。  
 
 I²C などのセンサー周りさえしっかり押さえられればすごく楽チンぽんですよ。  
@@ -1058,7 +1051,7 @@ $ZEPHYR_BASE/drivers/sensor 以下に収めるようにするのがZephyrでの�
 ### Device Driver Model
 Device Driver Model ( device.h )を利用すると、過度なカプセル化や煩雑なコードにならなくて済みそうかなと。  
 
-あと、MbedやArduinoやNordic SDKで書いたコードを利用しやすそうですし。  
+あと、MbedOSやArduinoやnRF5 SDKで書いたコードを利用しやすそうですし。  
 
 $ZEPHYR_BASE/drivers/sensor 以下に書くのはSensorと同じ要領です。  
 
@@ -1210,11 +1203,11 @@ void main(void)
 ドライバを完全にカプセル化出来てないジャマイカ！！！って怒られたらSensorベースにして、そっと * voidを手渡しましょう。  
 その方が平和になると思います。こういう仕草は Simba RTOSとかをよく見て勉強をしましょう。  
 
-## Zephyr RTOSのちょっとなところ
+## Zephyr RTOSのちょっとなところ(Reset pinのはなし)
 
 GUIのIDEはSegger Embedded Studioというのがありますが、開発する時の公式チュートリアル見てると west build / west flash あるいは ninja build / ninja flash が書かれています。  
 
-で、nRF9160はまだ基板作ったことないので知らないですが、nRF52832でリセットピン出し忘れて、そのまま ninja flash !ってTerminalからhexを流し込むとリセット掛からなくて電源引っこ抜いてもブートして来ない・・・という事態に陥ったりします。泣きます。  
+で、nRF52832でリセットピン出し忘れて、そのまま ninja flash !ってTerminalからhexを流し込むとリセット掛からなくて電源引っこ抜いてもブートして来ない・・・という事態に陥ったりします。泣きます。  
 
 nRF5 SDKのnRFgo Studioだとリセットピン出してなくてもフツーに書き込めて、ブートもしてくるのでホントこの辺ね。この辺ね。もうね。  
 
@@ -1226,9 +1219,9 @@ Zephyr RTOSでビルドしたHexだとブートしません。
 
 開発環境のOSをmacOSにしてしまったので、WindowsでKeil使わなくなりました。  
 
-Zephyr RTOSでやってると文鎮になることが分かったので、nRF5 SDK v15.3 と SES(Segger Embedded Studio)で開発していたのですが、なんと！ Download Hexした後に Verify すればリセットを掛けられる事が判明したのです！！！！すばらしい。さすが。もうさいこう。  
+Reset pinを出さずに ZephyrOSでやってると文鎮になることが分かったので、nRF5 SDK v15.3 と SES(Segger Embedded Studio)で開発していたのですが、なんと！ Download Hexした後に Verify すればリセットを掛けられる事が判明したのです！！！！すばらしい。さすが。もうさいこう。  
 
-ZephyrのHexを焼いてすぐに文鎮になるわけではなく、電源を落として電源を入れ直した時にブートして来ないという現象なので、強制リセットをかけられればオッケーのようです。
+ZephyrOSのHexを焼いてすぐに文鎮になるわけではなく、電源を落として電源を入れ直した時にブートして来ないという現象なので、強制リセットをかけられればオッケーのようです。
 そう。リセットさえかけれればブートするのです！  
 
 なので、必ずSESでソフトウェア開発しながらIDEでHex(elf)をDownloadし、Verifyをかければリセットピン出してなくても大丈夫です。のハズ！！きっと！！  
@@ -1238,8 +1231,8 @@ ZephyrのHexを焼いてすぐに文鎮になるわけではなく、電源を�
 対象が nRF52832 / nRF52840 であるならですが、DAP Link書き込み器を用意してください。  
 で、nRF5 SDKでビルドしたHexを何か用意します。Lチカでもいいです。  
 
-それをDAP Link経由で書き込みます。１回 Zephyr RTOSのHexを書き込んだだけなら復活すると思います。  
-２回以上 Zephyr RTOSで作ったHexを書き込んでるともう救えません。  
+それをDAP Link経由で書き込みます。１回 ZephyrOSのHexを書き込んだだけなら復活すると思います。  
+２回以上 ZephyrOSで作ったHexを書き込んでるともう救えません。  
 
 Thingy:91を色々書き込んでたら変な領域に書き込んだらしく、もうね。ははは。  
 
@@ -1440,7 +1433,7 @@ Sensorとかのデバイスはまた別スレッドとして device.c に \_\_de
 ## RTC
 Real Time Counterというらしい。  
 nRF52 の Zephyr RTOS では CONFIG\_・・・なんだっけ？ NRF_RTC1 がデフォルトで有効になっている。  
-NRF_RTC0 と NRF_RTC2 を使いたい場合はどうすれば良いのか分からない。しらない。ドキュメント見ても書いてない。しらんがな。(USE_RTC0 / USE_RTC2 とからしい？)  
+NRF_RTC0 と NRF_RTC2 を使いたい場合はどうすれば良いのか分からない。しらない。(USE_RTC0 / USE_RTC2 とからしい？)  
 
 k_cycle なんとか()を呼べばRTCのカウンター値を得られるらしい。  
 k_uptime_getなんとかを呼べばタイムスタンプが得られるらしい。  
