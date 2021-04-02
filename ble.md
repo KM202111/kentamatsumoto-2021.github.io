@@ -115,9 +115,11 @@ Bluetooth SIG認証は 最低限Bluetooth 4.2に対応していないと取得�
 （Nordic Semiの場合。他社さんも色々あるけど、有りすぎるのとソフトウェアの方知らないんでとりあえずNordic限定で）  
 
 nRF52832 - RAM  32 / 64KB 64MHz Cortex-M4F  
+nRF52805  （しらない）  
 nRF52810 - RAM       24KB 64MHz Cortex-M4 値段が nRF52832の半分くらい？ 廉価版  
+nRF52811　(しらない)  
 nRF52840 - RAM      256KB 64MHz Cortex-M4F  5.5V  
-nRF52833 - ・・・ AoA / AoD Bluetooth5.2 対応
+nRF52833 - ・・・ AoA / AoD Bluetooth5.2 対応  
 nRF5340 - でゅあるこあのスゴイやつ！！ <- New  
 
 まぁ、いいやめんどくさい、スペックシート見てくれ。  
@@ -158,8 +160,8 @@ USBも載りましたんで、もうnRF52840で行きましょう。そうしま
 そうじゃないなら、クラシックと変わらない  
 （データ送信し終わったら、ちゃんとsleepしよう）  
 
-なんだけど、結局 MCU内のハードウェア実装とStack内のソフトウェア実装に依存するんですよ・・・　　
-アプリケーションからは命令を叩くだけだから・・・  　　
+なんだけど、結局 MCU内のハードウェア実装とStack内のソフトウェア実装に依存するんですよ・・・  
+アプリケーションからは命令を叩くだけだから・・・  
 
 
 Long Range  
@@ -239,7 +241,7 @@ BT5.2 で LE Audio が発表されました。
 
 # Bluetooth SIG認証（最終製品登録）
 取得しなければならない。  
-  
+
 Nordic semiの場合、MCUとSoftDeviceのバージョンそれぞれに応じてSIG認証を取っているので、選択するMCUとSoftDeviceのバージョンの組み合わせで申請する（んだと思う）  
 
 
@@ -251,7 +253,7 @@ MbedOS / オンラインコンパイラ/MbedStudioで開発出来るみたいで
 ## Arduino
   Adafruit Feather nRF52 Bluefruit LEもGitHubにそれぞれパッケージとして上がってますので、こちらをArduino IDEにインストールすればいいです  
 
-[Adafruit Feather nRF52 Bluefruit LE] (https://github.com/adafruit/Adafruit_nRF52_Arduino)  
+[Adafruit Feather nRF52 Bluefruit LE](https://github.com/adafruit/Adafruit_nRF52_Arduino)  
 
 
 ## nRF5 SDK
@@ -275,8 +277,8 @@ LED1個（抵抗も忘れずに）、GPIOボタン1個、リセットボタン�
 
 ## ソフトウェア
 もう全部 nRF Connect SDKでいいや。  
-  
-  
+
+
 どうやら nRF Connect SDK v1.5.0 から nRF52 のサポートも入ったっぽい（ように見える）んですよね・・・  
 
 
@@ -292,6 +294,9 @@ nRF52が対向の場合、MTUは 247 - 3 = 244 まで扱えるので、そのく
 電池(電源周りの設計)はハードウェア設計に依存します。nRF52832の場合はコンデンサは C3 まで載せた方がいいけど、その辺は選択するMCU依存なので、各MCUのボード設計がモジュールメーカー（Nordicのパートナー企業様）から出ているので、そちらを参考にしてください（参考にしてくださいというか、そのまま回路図を起こしてください）
 
 スループットも10KB/secは出ます。最新のiPadで20KB/secくらいだったかなぁ・・・（ここうろ覚え  
+次の nRF5340 はデュアルコアでネットワークコアがあるので更に省電力に！とても楽しみ！！  
+
+
 
 # スループットとかデータ長とか
 
@@ -305,15 +310,15 @@ nRF52が対向の場合、MTUは 247 - 3 = 244 まで扱えるので、そのく
 # Getting Started with nRF5 SDK on Nordic nRF52832
 
 ### Introduction
-  
-
+とてもツラたん  
+製品を作る時は nRF5 SDKで担保します。  
 
 ### Installing the SDK  
 Nordic semi. のWebサイトから SDKの Zipファイル nRF5_SDK_x.x.x_xxxxxxx.zip (for example, nRF5_SDK_v17.0.2_1a2b3c4.zip) と併せて使用するSoftDeviceをダウンロードします。  
 SoftDeviceは利用する nRF52 MCUの種類とSoftDeviceが対応している機能によって S112, S113, S132, S140 などを適宜選択します。  
-  
+
 ダウンロードできたらzipファイルは任意の場所に展開します（スペースを含むフォルダに展開しない方がいいかも知れません）  
-  
+
 アプリケーション開発に使用できる IDE（統合開発環境）は Keil ARM MDK, IAR, Segger embedded studio(こちらは Nordic editionもあります) などがありますので、好きな IDE を選ぶことが可能です。  
 
 
@@ -340,7 +345,7 @@ ble_app_uart のプロジェクトを丸ごとコピーして、それをベー�
 
 
 1. MbedOS <- ツラい  
-2. Arduino <- 不安（わからない  
+2. Arduino <- （わからない  
 3. Nordic SDK <- ﾁｮｯﾄﾃﾞｷﾙけど、とてもツラい  
   
 
@@ -901,10 +906,7 @@ BLE / Blutooth部分に至っては、prj.conf に設定を書くだけ。exchan
 I²C などのセンサー周りさえしっかり押さえられればすごく楽チンぽんですよ。  
 [ソースコード](https://github.com/github-deden/zephyr_ble_mpu6050)はGitHubにアップロードしてあります。  
 
-Zephyr RTOSは 2019/04 現在 v1.14 までリリースされていて、このバージョンでLTSにもなっています（そしてみんなダイスキ・オープンソース！）。  
-
-次は v2.0 がリリース予定だそうです。  
-と思っていたら、もう 2.1 が出てる・・・  
+Zephyr RTOSは 2019/04 現在 v1.14 までリリースされていて、このバージョンでLTSにもなっています（そしてみんなダイスキ・オープンソース！）   
 
 # Zephyr RTOS Programming ( I²C 編 )
 
@@ -1521,11 +1523,11 @@ cmake でのプロジェクトの展開はできるけど、Ubuntuでninja flash
 
 # と、ここまで書きましたが
 
-Zephyr OS はあくまでもLinux FoundationのオープンソースなProjectで、Nordic semi はOSSにコミットしつつ、その成果を nRF Connect SDK として ZephyrOS を含む形で現在開発を進めています  
+Zephyr OS はあくまでもLinux FoundationのオープンソースなProjectで、Nordic semi はOSSにコミットしつつ、その成果を nRF Connect SDK として ZephyrOS™️ を含む形で現在開発を進めています  
 それはとてもアグリーですね  
 
 Nordicの次期 SDK である nRF Connect SDKは ZephyrOS™️ がベースなので、Zephyrをちゃんと勉強しておきましょう。  
-
+それはとてもアグリーです  
 
 
 
@@ -1548,9 +1550,9 @@ Nordicの次期 SDK である nRF Connect SDKは ZephyrOS™️ がベースな�
 
 こんな感じ。  
 ２層で出来ます。  
-  
+
 回路図さえキチンと出来てしまえば、あとのボード図（アートワーク設計）では自動配線のボタン押すだけなので、とても簡単です。  
-  
+
 
 基板の製作は Seeed（eは３つ）のFusionPCBとかにお願いすると良いです。  
 基板実装サービスも展開されていますので、もうそれはとても安心です。  
@@ -1681,7 +1683,7 @@ class BTManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate
 
 
 ```
-  
+
 データのやりとりを管理する Peripheralのクラス  
 
 ```BT_Peripheral.swift
