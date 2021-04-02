@@ -275,6 +275,12 @@ LED1個（抵抗も忘れずに）、GPIOボタン1個、リセットボタン�
 
 ## ソフトウェア
 もう全部 nRF Connect SDKでいいや。  
+  
+  
+どうやら nRF Connect SDK v1.5.0 から nRF52 のサポートも入ったっぽい（ように見える）んですよね・・・  
+
+
+
 
 # iOS13とか
 iPhone7 以降の端末はiOS13 (13.2？もうアップデートしちゃったからよく分かんない)でATT MTUが185を越えて200byte以上のパケットも扱えるように（iOSデバイス内のコンボチップとファームウェアに依存します）。  
@@ -1518,17 +1524,244 @@ cmake でのプロジェクトの展開はできるけど、Ubuntuでninja flash
 Zephyr OS はあくまでもLinux FoundationのオープンソースなProjectで、Nordic semi はOSSにコミットしつつ、その成果を nRF Connect SDK として ZephyrOS を含む形で現在開発を進めています  
 それはとてもアグリーですね  
 
+Nordicの次期 SDK である nRF Connect SDKは ZephyrOS™️ がベースなので、Zephyrをちゃんと勉強しておきましょう。  
+
+
+
+
+
 # Getting Started with HardWare on Nordic nRF52832
 
 
 ### introduce
 
-どうしてこうなった・・・
+どうしてこうなった・・・  
 
 ### CAD
 好きなのを選びます。KiCAD / EAGLE / ｱﾙﾃｨｳﾑ（高い） MCUのライブラリがあれば出来ます  
 
 ### 回路図
+<img width="50%" alt="curcit" src="images/curcit.png">
+
+### アートワーク
+<img width="50%" alt="board" src="images/board.png">
+
+こんな感じ。  
+２層で出来ます。  
+
+基板の製作は Seeed（eは３つ）のFusionPCBとかにお願いすると良いです。  
+基板実装サービスも展開されていますので、もうそれはとても安心です。  
+
 
 # Getting Started with CoreBluetooth on iOS
+
+<img width="50%" alt="throughput" src="images/throughput.png">
+なんと iPad mini5とかをUSB接続して、Xcode でスループット測定とパケットキャプチャが同時にできちゃいます。  
+画期的ですね。  
+
+## CoreBluetooth
+
+```BT_Manager.swift
+//
+//  BTManager.swift
+//
+//
+//  Created by hoehoe on 2018/06/10.
+//  Copyright © 2017年 chocbanana. All rights reserved.
+//
+
+import CoreBluetooth
+
+
+@objc protocol BT_ManagerDelegate {
+
+    func foundPeripheralDelegate(btPeripheral: BT_Peripheral)
+    func lostPeripheralDelegate()
+}
+
+class BTManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate
+{
+    
+    static let shared:BTManager = BTManager()
+    
+    //dice service uuid: "2A680001-0BC1-4689-AC07-8153AF8868C9"
+    
+
+    let serviceUUIDs:Array<CBUUID>? = [ CBUUID.init(string: "B5570001-8D38-4C97-972A-5AD5E9EAA182"), ]
+    
+    var manager:CBCentralManager! = nil
+    var btPeripheral:BT_Peripheral! = nil
+
+    weak var delegate:BT_ManagerDelegate?
+    
+    private override init() {
+        super.init()
+        manager = CBCentralManager(delegate: self, queue: nil)
+    }
+    
+    func connect(peripheral :CBPeripheral){
+         btPeripheral = BT_Peripheral()
+         btPeripheral.peripheral = peripheral
+         btPeripheral.setup()
+        
+         manager.connect(peripheral, options: nil)
+         manager.stopScan()
+
+     }
+    
+    func centralManagerDidUpdateState(_ central: CBCentralManager) {
+        switch  central.state {
+        case .poweredOn:
+            start()
+            break
+        case .poweredOff:
+            stop()
+            break
+        case .unauthorized:
+            break
+        default:
+            break
+        }
+    }
+    
+    private func start(){
+        
+        
+        manager.scanForPeripherals(withServices: serviceUUIDs, options: nil) //[advUUID]
+        print("start scan")
+    }
+    
+    private func stop(){
+        
+        if manager.isScanning == true {
+            manager.stopScan()
+        }
+
+    }
+    
+    
+    func centralManager(_ central: CBCentralManager, didFailToConnect peripheral: CBPeripheral, error: Error?) {
+        self.delegate?.lostPeripheralDelegate()
+    }
+    
+    func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
+        print("didConnect")
+
+        self.btPeripheral.peripheral.discoverServices(serviceUUIDs)
+        self.delegate?.foundPeripheralDelegate(btPeripheral: self.btPeripheral)
+    }
+    
+    func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
+
+        start()
+
+    }
+    
+    func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String : Any], rssi RSSI: NSNumber) {
+
+        btPeripheral = BT_Peripheral()
+        btPeripheral.peripheral = peripheral
+        btPeripheral.setup()
+        
+        //print(advertisementData)
+        
+        self.manager.connect(peripheral, options: nil)
+        
+        print("didDiscover")
+    
+    }
+
+}
+
+
+```
+
+```BT_Peripheral.swift
+//
+//  BT_NegiPeripheral.swift
+//  BT_NegiPeripheral
+//
+//  Created by hoehoe on 2018/06/10.
+//  Copyright © 2018年 chocbanana. All rights reserved.
+//
+
+import CoreBluetooth
+
+
+@objc protocol BT_PeripheralDelegate {
+    func peripheral_Data( value:NSData )->Void
+    func peripheral_MPU9250Data( value:NSData )->Void
+}
+
+class BT_Peripheral: NSObject, CBPeripheralDelegate {
+    var peripheral:CBPeripheral! = nil
+        
+    let notifyCharacteristicUUID:Array<CBUUID>! = [ CBUUID(string: "B5570002-8D38-4C97-972A-5AD5E9EAA182"), ]
+    
+    weak var delegate:BT_PeripheralDelegate?
+    
+    func setup()->Void{
+        self.peripheral.delegate = self
+    }
+    
+    func peripheral(_ peripheral: CBPeripheral, didDiscoverServices error: Error?) {
+        for service:CBService in peripheral.services! {
+            
+            
+            peripheral.discoverCharacteristics(notifyCharacteristicUUID, for: service)
+            print("service found")
+        }
+    }
+    
+    func peripheral(_ peripheral: CBPeripheral, didDiscoverCharacteristicsFor service: CBService, error: Error?) {
+        for characteristic:CBCharacteristic in service.characteristics! {
+            //print(characteristic.uuid)
+            for uuid in notifyCharacteristicUUID {
+                if characteristic.uuid.uuidString == uuid.uuidString{
+                    print("characteristic found")
+                    peripheral.setNotifyValue(true, for: characteristic)
+                }
+            }
+        }
+    }
+    
+    func peripheral(_ peripheral: CBPeripheral, didUpdateNotificationStateFor characteristic: CBCharacteristic, error: Error?) {
+
+    }
+    
+    func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
+        
+        for uuid in notifyCharacteristicUUID {
+            if characteristic.uuid.uuidString == uuid.uuidString {
+                
+                let data:NSData = characteristic.value! as NSData
+
+                if characteristic.uuid.uuidString == "B5570002-8D38-4C97-972A-5AD5E9EAA182" {
+                    print("hoge")
+                    delegate?.peripheral_Data(value: data)    
+                }else{
+                    print("fuga")
+                }
+            }
+        }
+    }
+    
+    func notifyDisable(_ peripheral: CBPeripheral){
+        for service:CBService in peripheral.services! {
+            for characteristic in service.characteristics! {
+                for uuid in notifyCharacteristicUUID {
+                    if characteristic.uuid.uuidString == uuid.uuidString {
+                        peripheral.setNotifyValue(false, for: characteristic)
+                    }
+                }
+            }
+        }
+    }
+    
+}
+
+```
+
+こんな感じ。  
+
 
