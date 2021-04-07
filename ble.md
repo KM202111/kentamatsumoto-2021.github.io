@@ -85,6 +85,7 @@ Bluetooth3 までのを含むモジュールの場合、Dual mode。BLEだけの
 **GATT**  
 　- データの定義と振る舞いを任意に設定できます。  
 　- Bluetooth SIGによってあらかじめ決められた16bit UUIDのプロファイルもありますが、開発者が加速度センサーなどを繋いでスマートフォンなどにセンサー値を送信したりする時、任意のデータ構造とRead/Write/Notification/Indicationなどの振る舞いを設定できるのが GATTになります(128bit UUIDね)。  
+　- Bluetoothも無線でネットワークだから、データは直列化（シリアライズ）して送信しましょう.  
 
 **GATT Server / GATT Client**  
    - データを持っている方がサーバー。データを受け取る方がクライアント。  
@@ -247,6 +248,7 @@ AoA、位相だから頑張ってね！！！！（またかよ・・・どう�
 BT5.1 で Periodic Advertising Sync Transfer（定期的なアドバタイジングと同期した転送）機能が載りました。  
 Gatt cachingもかなり有効に効いてます。  
 BT5.2 で LE Audio が発表されました。  
+nRF52のI2Sは24bitらしいです。nRF5340のI2Sは32bitらしいです。  
 
 
 ### Bluetooth SIG認証（最終製品登録）
@@ -311,6 +313,8 @@ nRF52が対向の場合、MTUは 247 - 3 = 244 まで扱えるので、そのく
 ### サポート
 技術サポートを受けたいのであれば、サポートを受けられるように選択をしましょう。  
 
+### まぁ
+なんでもかんでもBluetoothで良いかって言われたら、そんなわけは無いので（省電力でスマフォと繋げるなら１つの選択肢としてはあるだろうけど、別にWi-Fiでも良いし）なんかCellularもWi-FiもBluetoothもZigbeeもTHREADも全部できるモジュールを複数載せておけば安心なんだと思いますよ。
 
 
 # Getting Started with nRF5 SDK on Nordic nRF52832
@@ -342,7 +346,6 @@ ble_app_uart のプロジェクトを丸ごとコピーして、それをベー�
 
 
 
-
 # Getting Started with Zephyr RTOS on Nordic nRF52832
 
 ### Introduction
@@ -350,9 +353,9 @@ ble_app_uart のプロジェクトを丸ごとコピーして、それをベー�
 ん〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜  
 
 
-1. MbedOS <- ツラい  
+1. MbedOS <- なんもワカラン  
 2. Arduino <- （わからない  
-3. nRF5 SDK <- ﾁｮｯﾄﾃﾞｷﾙけど、とてもツラい  
+3. nRF5 SDK <- とてもツラい  
   
 
 これからはZephyrだ！！！！  
@@ -1525,7 +1528,11 @@ cmake でのプロジェクトの展開はできるけど、Ubuntuでninja flash
 
 とりあえず、Ubuntuでのセットアップは３日くらいハマればまぁ、動くと思います。ハマって下さい。19.10の方が良いかもしんない。  
 
+### ZephyrOSの省電力のひみつ
+OSS である ZephyrOS に Nordicががんばってコミットしていますが、OSSであるおかげか Bluetoothスタック部分にもちゃんと改修が入ってて、RTCとPPI を使用した形でスタックがリニューアルされているため、CPUを使用しない（？）感じになっているようで、省電力がパワーアップしています。すごく延びます。  
 
+
+### おすすめの書籍
 そんな私の手に差し伸べられた救世主！神！！友利奈緒が書いた nRF5 Segger Embedded Studio本がなんとboothに！！！！これは買わなくては！！！！  
 
 [ゼロから作るBLEデバイス　nRFマイコンとSEGGER Embedded Studioでやってみた！](https://booth.pm/en/items/1577270)  
@@ -1568,6 +1575,7 @@ Nordicの次期 SDK である nRF Connect SDKは ZephyrOS™️ がベースな�
 基板実装サービスも展開されていますので、もうそれはとても安心です。  
 
 きちんとモジュールメーカーが提供している資料をよく見て回路を引きましょう。それをやるだけです。  
+４層にすればきっともっとコンパクトに？！（やめておきましょう  
 
 
 # Getting Started with CoreBluetooth on iOS
