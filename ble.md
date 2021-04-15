@@ -1,4 +1,4 @@
-# Bluetooth 2021-04-16 00:15 までの備忘録
+# Bluetooth 2021-04-16 00:28 までの備忘録
 
 [TOC]
 
@@ -38,69 +38,68 @@ Bluetooth3 までのを含むモジュールの場合、Dual mode。BLEだけの
 **Peripheral Role でのアドバタイズのUUIDはビッグエンディアン（CentralからScanする際はPeripheralのadv UUIDを反転させてscanさせないとデバイスが見えない）**  
 
 **GATTのRead / Notification / Indication それぞれどう振る舞う？**  
-   - ReadはGATT Clientから読む。NotificationはGATT Serverから送る。IndicationはNotification + ACK。IndicationはACK返すだけ  
+  - ReadはGATT Clientから読む。NotificationはGATT Serverから送る。IndicationはNotification + ACK。IndicationはACK返すだけ  
 
 **Read時にサービスから読み込むGATT Characteristicの順番はどうなっている？**  
-
-   - Characteristics を先にくっ付けた順番 (GattCharacteristic *ControllerChars[] = { &accelChar, &writeChar, };) で読まれる。Notificationの時も最初にくっ付けたcharacteristicが多く来る・・・のかな？)  
+  - Characteristics を先にくっ付けた順番 (GattCharacteristic *ControllerChars[] = { &accelChar, &writeChar, };) で読まれる。Notificationの時も最初にくっ付けたcharacteristicが多く来る・・・のかな？)  
 
 **BLEって、クラシックBluetoothのSPPみたいにシリアル通信できないの？**  
-　- iOSをClientにして、dispatch_queue_t centralQueue = dispatch_queue_create("hoge.fuga", DISPATCH_QUEUE_SERIAL); としてSerialQueueにしてReadすれば出来る。  
- - Notification / Indicationでは出来ない -順不同になる-   
- - 特に、コンカレントな接続で複数デバイス接続するともう順番ぐちゃぐちゃになるます。  
+  - iOSをClientにして、dispatch_queue_t centralQueue = dispatch_queue_create("hoge.fuga", DISPATCH_QUEUE_SERIAL); としてSerialQueueにしてReadすれば出来る。  
+  - Notification / Indicationでは出来ない -順不同になる-   
+  - 特に、コンカレントな接続で複数デバイス接続するともう順番ぐちゃぐちゃになるます。  
 
 **BLE4.2 で ATT MTU Exchange を使用することにより、247オクテットまでは拡張できるようになった。**  
- - ただしアプリケーションより下のレイヤーでパケットが分割（L2CAPだと・・・なんだろ？フレーム？）されて送信されたりするし、その辺りは物理層とSoftDeviceなどの下位レイヤーの実装に依る。  
- - あと、デバイスでMTUを247にしてもiOSとのMTU交換時にiOS側が決めるので、iOSのバージョンによっては185になったりします。  
- - そうなると結局中途半端なので、データ長は128など区切りのいいとこで区切るか、もしくはGATT Clientでデータはくっ付けるので、データ長が分かれば受信側の最大長のData Lengthで送信しておけばいいです  
+  - ただしアプリケーションより下のレイヤーでパケットが分割（L2CAPだと・・・なんだろ？フレーム？）されて送信されたりするし、その辺りは物理層とSoftDeviceなどの下位レイヤーの実装に依る。  
+  - あと、デバイスでMTUを247にしてもiOSとのMTU交換時にiOS側が決めるので、iOSのバージョンによっては185になったりします。  
+  - そうなると結局中途半端なので、データ長は128など区切りのいいとこで区切るか、もしくはGATT Clientでデータはくっ付けるので、データ長が分かれば受信側の最大長のData Lengthで送信しておけばいいです  
 
 **Readの時にGATT Characteristicの読み込み（複数Readしていると）処理が追いつかないよ！？**  
 
-   - ReadするCharacteristicの数を減らすか、複数のPeripheralに分けましょう。  
+  - ReadするCharacteristicの数を減らすか、複数のPeripheralに分けましょう。  
 
 **センサーが速すぎて、BLEのコネクションインターバル内に収まらない**  
-　- 512Hzとかのセンサーをくっ付けると、コネクションインターバルの最小値7.5msで追いつけないので、配列や構造体に複数サンプル載せましょう。  
+  - 512Hzとかのセンサーをくっ付けると、コネクションインターバルの最小値7.5msで追いつけないので、配列や構造体に複数サンプル載せましょう。  
 
 **開発中にGATTを変えると、iPhoneのBluetoothをオン・オフしないとダメだけど、service changedっていうCharacteristicもあるようです。**  
-　- でもペアリングしていると、ペアリング情報を削除してBTをオン・オフしないとダメなので、微妙です。もう、BTオン・オフすれば良いんじゃないかな・・・。  
+  - でもペアリングしていると、ペアリング情報を削除してBTをオン・オフしないとダメなので、微妙です。もう、BTオン・オフすれば良いんじゃないかな・・・。  
 
 **ペアリングの情報がiPhoneに残っていると、BLEデバイスのHexファイルを書き換えた時、iPhoneのBluetoothをON/OFFしてもキャッシュが残ったままでハマる**  
   - ペアリング情報を削除後、iPhoneのBluetoothをON/OFFしましょう  
 
 **パケット落ちって分かるの？**  
-　- CRCは付いてるけど、エラー訂正はBluetooth5のCODEDを使うしか無い。  
+  - CRCは付いてるけど、エラー訂正はBluetooth5のCODEDを使うしか無い。  
 
 **受信側ではちゃんとバッファリングしような。**  
 
 
 **ペアリングとボンディングって違うの？？？（何が違うの？どう違うの？？？**
-   - めっちゃ大雑把に。鍵交換をするのがペアリング。鍵を保存するのがボンディング（っていうらしいです）  
-   - 両方を含めた意味で、ペアリングと呼ぶことが多いらしいです。  
+  - めっちゃ大雑把に。鍵交換をするのがペアリング。鍵を保存するのがボンディング（っていうらしいです）  
+  - 両方を含めた意味で、ペアリングと呼ぶことが多いらしいです。  
 
 **GAPとGATT**  
 
 **GAP**  
-　 - 役割（Role）・デバイス名などBLEデバイス全体に関わるパラメータを設定します。  
+  - 役割（Role）・デバイス名などBLEデバイス全体に関わるパラメータを設定します。  
 
 **GATT**  
-　- データの定義と振る舞いを任意に設定できます。  
-　- Bluetooth SIGによってあらかじめ決められた16bit UUIDのプロファイルもありますが、開発者が加速度センサーなどを繋いでスマートフォンなどにセンサー値を送信したりする時、任意のデータ構造とRead/Write/Notification/Indicationなどの振る舞いを設定できるのが GATTになります(128bit UUIDね)。  
-　- Bluetoothも無線でネットワークだから、データは直列化（シリアライズ）して送信しましょう.  
+  - データの定義と振る舞いを任意に設定できます。  
+  - Bluetooth SIGによってあらかじめ決められた16bit UUIDのプロファイルもありますが、開発者が加速度センサーなどを繋いでスマートフォンなどにセンサー値を送信したりする時、任意のデータ構造とRead/Write/Notification/Indicationなどの振る舞いを設定できるのが GATTになります(128bit UUIDね)。  
+  - Bluetoothも無線でネットワークだから、データは直列化（シリアライズ）して送信しましょう.  
 
 **GATT Server / GATT Client**  
-   - データを持っている方がサーバー。データを受け取る方がクライアント。  
-   - BLEでは通常、（センサーの）データを持っているBLEデバイスがサーバーになる事が多い。  
-   - L2CAPのレイヤーではマスター・スレーブと言ったりするらしいけど、レイヤーが違うと呼び方が違いますよ。という事だそうです。  
+  - データを持っている方がサーバー。データを受け取る方がクライアント。  
+  - BLEでは通常、（センサーの）データを持っているBLEデバイスがサーバーになる事が多い。  
+  - L2CAPのレイヤーではマスター・スレーブと言ったりするらしいけど、レイヤーが違うと呼び方が違いますよ。という事だそうです。  
 
 
 **Security Manager**  
-   - BLEではペアリングは無い・・・という解説を見かけたりすることもありますが、スマートフォンとBLEデバイスを１対１で接続する場合にペアリング（及びボンディング）させる事もできます。  
-   - その際に鍵の交換などの処理を司っているのがSecurity Managerになります。  
-   - NFCを利用したOOBペアリングというのもあります。  
+  - BLEではペアリングは無い・・・という解説を見かけたりすることもありますが、スマートフォンとBLEデバイスを１対１で接続する場合にペアリング（及びボンディング）させる事もできます。  
+  - その際に鍵の交換などの処理を司っているのがSecurity Managerになります。  
+  - NFCを利用したOOBペアリングというのもあります。  
 
 **ANCS(Apple Notification Center Service)**  
-   - スマフォ(iPhone/iPad)・BLEデバイス連携でよくある、スマフォ(iPhone/iPad)の通知情報をBLEデバイスに伝える仕組み・・・ですが、これは少々特殊で、iPhoneとBLEデバイスが両方Peripheral Roleです。  
-   - つまり、Roleとしては両方PeripheralですがGATT ServerとGATT Clientが逆になっている・・・ということです。  
+  - スマフォ(iPhone/iPad)・BLEデバイス連携でよくある、スマフォ(iPhone/iPad)の通知情報をBLEデバイスに伝える仕組み・・・ですが、これは少々特殊で、iPhoneとBLEデバイスが両方Peripheral Roleです。  
+  - つまり、Roleとしては両方PeripheralですがGATT ServerとGATT Clientが逆になっている・・・ということです。  
 
 ## Bluetooth 5
 2018年 3月時点での話のまとめ  
@@ -243,7 +242,7 @@ Zigbee
 • Periodic Advertising Sync Transfer  
 • Sleeve of minor enhancements  
 
-AoA、位相だから頑張ってね！！！！（またかよ・・・どうすればいいんだよ・・・全部ソフトウェア任せかよ・・・  
+AoA、位相だから頑張ってね！！！！（どうすればいいんだよ・・・iPhoneはUWB載せちゃったよ・・・  
 
 BT5.1 で Periodic Advertising Sync Transfer（定期的なアドバタイジングと同期した転送）機能が載りました。  
 Gatt cachingもかなり有効に効いてます。  
@@ -351,7 +350,7 @@ NRF_LOG_INFO("  X: " NRF_LOG_FLOAT_MARKER "", NRF_LOG_FLOAT(event->data.quaterni
 
 ### nRF5 SDK の BLE のサンプル
 ble_app_uart とかのプロジェクトを丸ごとコピーして、それをベースに作ります。 BLEのService / Characteristicsも併せて設計し直します  
-  
+
 ble_app_uartとtwi_sensorの２つのサンプル・プロジェクトの内容を抑えておけば、大体は困らないハズ.  
 困ったら DevZoneを検索してみましょう.  
 
@@ -846,23 +845,6 @@ static void mpu_ccc_cfg_changed(const struct bt_gatt_attr *attr, u16_t value)
 {
     notifyEnable = (value == BT_GATT_CCC_NOTIFY) ? 1 : 0;
 }
-
-//static ssize_t read_ct(struct bt_conn *conn, const struct bt_gatt_attr *attr,
-//                       void *buf, u16_t len, u16_t offset)
-//{
-//    const char *value = attr->user_data;
-//
-//    return bt_gatt_attr_read(conn, attr, buf, len, offset, value,
-//                             sizeof(mpu_vals));
-//}
-//
-//static ssize_t write_ct(struct bt_conn *conn, const struct bt_gatt_attr *attr,
-//                        const void *buf, u16_t len, u16_t offset,
-//                        u8_t flags)
-//{
-//    notifyEnable = !notifyEnable;
-//    return len;
-//}
 
 /* Vendor Primary Service Declaration */
 static struct bt_gatt_attr attrs[] = {
@@ -1584,7 +1566,7 @@ Nordicの次期 SDK である nRF Connect SDKは ZephyrOS™️ がベースな�
 
 基板の製作は Seeed（eは３つ）のFusionPCBとかにお願いすると良いです。  
 基板実装サービスも展開されていますので、もうそれはとても安心です。  
-  
+
 きちんとモジュールメーカーが提供している資料をよく見て回路を引きましょう。それをやるだけです。  
 
 ### 注意する点
@@ -1825,5 +1807,5 @@ iOSアプリを入門するなら、動画でレクチャーしてもらえる �
 # つまり
 
 MacBook pro が１台あれば、基板設計からファームウェア、BLEアプリケーションまで全て Macintosh で開発ができちゃいます！！！これはとても素晴らしいことです！！！  
-  
+
 nRFマイコンはいいぞ！！  
