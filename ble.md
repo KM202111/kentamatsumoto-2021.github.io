@@ -1593,6 +1593,14 @@ Nordicの次期 SDK である nRF Connect SDKは ZephyrOS™️ がベースな�
 ### 電池
 まぁ電池まで担保できるなら好きにして良いと思うけど、PSEとか電池の劣化とか取引先とか、目に見えないコストまで担保できるなら色々選択は出来るだろうけど、ね.  
 
+### なので
+|  表面  |  裏面  |
+| ---- | ---- |
+|  <img alt="board" src="images/screen_shot_2021-05-28 10.22.11.png">  |  <img  alt="board" src="images/screen_shot_2021-05-28 10.22.29.png">  |
+
+WLSCP パッケージ版のモジュールを使用すると、センサーもつけて 裏側に JST PHR-2コネクタつけて 18mm x 20mm くらいの基板サイズに実装可能です（出来るとは言ってない）。  
+16mm x 18mm くらいにならないかしら・・・。  
+
 
 # Getting Started with CoreBluetooth on iOS
 
