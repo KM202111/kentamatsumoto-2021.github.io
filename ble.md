@@ -315,6 +315,13 @@ CR1632(140mAh) / muRata で 48時間程度 （Panasonicので 36時間程度）
 スループットも10KB/secは出ます。最新のiPadで20KB/secくらいだったかなぁ・・・（ここうろ覚え  
 次の nRF5340 はデュアルコアでネットワークコアがあるので更に省電力に！とても楽しみ！！  
 
+### DCDC はちゃんと有効化しましょう
+nRF Connect SDK では デフォルトでDCDCを使用するようにCONFIGの設定がされています。  
+nRF5 SDK でも ble_stack_init() を呼んだ後に sd_power_dcdc_mode_set() しましょう。  
+https://devzone.nordicsemi.com/f/nordic-q-a/35056/is-dc-dc-regulator-enabled-in-nrf52-series  
+
+今までのセンサーは3V付近で動作するものが多かったですが、昨今のセンサーは 1.7V付近でも動作するものが多いので、MCUに搭載されているDCDCをきちんと使えばMCUもセンサーも1.7Vでもちゃんと動作させることが可能になりますので。  
+
 ### スループットとかデータ長とか
 
 スループットとかデータ長とかコネクションインターバルとかは クライアント側（ iOS ）が決めますが、その際どこまで出るかとかは iOS デバイス内のコンボチップの性能に依存していると思われるので、最新でリリースされている iOS デバイスとエントリーモデルでリリースされている iOS デバイスとでは発揮される性能に差が生じる可能性があります  
@@ -1803,6 +1810,111 @@ class BT_Peripheral: NSObject, CBPeripheralDelegate {
 こんな感じ。CoreBluetoothの資料はWebにたくさんあるので、そう困らないですね。Appleのドキュメントも充実してますし  
 特に iOSアプリプログラマーなら困らないハズ・・・・・・・・・  
 iOSアプリを入門するなら、動画でレクチャーしてもらえる ドットインストールとかおススメです.  
+
+
+# Getting Started with NCS on nRF5340
+
+新しくなった MCU です。 Cortex M33 です。  
+WLCSP パッケージもありますので、超小型で設計が可能になってます。  
+
+[ prj.conf (nRF5340-DK) ]
+```prj_nrf53.conf
+#
+# Copyright (c) 2018 Nordic Semiconductor
+#
+# SPDX-License-Identifier: LicenseRef-BSD-5-Clause-Nordic
+#
+
+CONFIG_GPIO=y
+# CONFIG_HEAP_MEM_POOL_SIZE=2048
+CONFIG_NEWLIB_LIBC=y
+CONFIG_STDOUT_CONSOLE=n
+# CONFIG_NEWLIB_LIBC_FLOAT_PRINTF=y
+# CONFIG_MAIN_STACK_SIZE=4096
+
+# This example requires more workqueue stack
+# CONFIG_SYSTEM_WORKQUEUE_STACK_SIZE=2048
+
+# Main Thread Config
+CONFIG_MAIN_THREAD_PRIORITY=7
+#CONFIG_SIZE_OPTIMIZATIONS=y
+
+
+# BT
+CONFIG_BT=y
+
+CONFIG_BT_SETTINGS=y
+CONFIG_FLASH=y
+CONFIG_FLASH_PAGE_LAYOUT=y
+CONFIG_FLASH_MAP=y
+CONFIG_NVS=y
+CONFIG_SETTINGS=y
+
+CONFIG_BT_DEBUG_LOG=n
+CONFIG_BT_SMP=y
+CONFIG_BT_SIGNING=y
+CONFIG_BT_PERIPHERAL=y
+#CONFIG_BT_GATT_DIS=n
+
+#CONFIG_BT_GAP_PERIPHERAL_PREF_PARAMS=y
+#CONFIG_BT_PERIPHERAL_PREF_MIN_INT=25
+#CONFIG_BT_PERIPHERAL_PREF_MAX_INT=75
+#CONFIG_BT_PERIPHERAL_PREF_SLAVE_LATENCY=4
+#CONFIG_BT_PERIPHERAL_PREF_TIMEOUT=400
+
+CONFIG_BT_ATT_PREPARE_COUNT=2
+CONFIG_BT_PRIVACY=y
+CONFIG_BT_DEVICE_NAME="nRF5x_yyy_zzz"
+CONFIG_BT_DEVICE_APPEARANCE=833
+CONFIG_BT_DEVICE_NAME_DYNAMIC=y
+CONFIG_BT_DEVICE_NAME_MAX=65
+
+CONFIG_BT_GATT_CACHING=y
+CONFIG_BT_GATT_DYNAMIC_DB=y
+
+# BLE DLE
+CONFIG_BT_RX_BUF_LEN=258
+CONFIG_BT_ATT_TX_MAX=10
+CONFIG_BT_ATT_PREPARE_COUNT=2
+CONFIG_BT_CONN_TX_MAX=10
+
+CONFIG_BT_L2CAP_TX_BUF_COUNT=10
+CONFIG_BT_L2CAP_TX_MTU=247
+CONFIG_BT_L2CAP_DYNAMIC_CHANNEL=y
+
+CONFIG_BT_CTLR_RX_BUFFERS=2
+CONFIG_BT_CTLR_TX_BUFFERS=10
+CONFIG_BT_CTLR_TX_BUFFER_SIZE=251
+CONFIG_BT_CTLR_DATA_LENGTH_MAX=251
+# CONFIG_BT_CTLR_ADVANCED_FEATURES=y
+
+
+# SoftDevice
+CONFIG_BT_LL_SOFTDEVICE=y
+CONFIG_BT_LL_SOFTDEVICE_DEFAULT=y
+CONFIG_BT_LL_SOFTDEVICE_VS_INCLUDE=y
+CONFIG_SOFTDEVICE_CONTROLLER_PERIPHERAL=y
+# CONFIG_BT_CTLR_LLPM=y
+
+# Enable DK LED and Buttons library
+CONFIG_DK_LIBRARY=y
+
+# for I2C 
+CONFIG_I2C=y
+CONFIG_I2C_NRFX=y
+CONFIG_I2C_INIT_PRIORITY=60
+
+#nRF53
+CONFIG_I2C_0=n
+CONFIG_I2C_1=y
+CONFIG_BT_RPMSG_NRF53=y
+```
+
+今のところの注意する点は、上記の通りかと。あとは普通に動きます。  
+このprj.confで cpuappを指定して west build / west flash --recover すれば動きますね。  
+あと nRF Command Line Tools を最新にしておく必要がありますね。  
+
+楽チンぽんです。  
 
 
 # つまり
