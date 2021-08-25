@@ -360,6 +360,9 @@ ble_app_uart とかのプロジェクトを丸ごとコピーして、それを�
 ble_app_uartとtwi_sensorの２つのサンプル・プロジェクトの内容を抑えておけば、大体は困らないハズ.  
 困ったら DevZoneを検索してみましょう.  ちゃんとDCDC使おうぜ.
 
+### ちゃんとこの nRF5 SDK をマスターしておきましょう
+そうすると、nRF Connect SDK での開発が凄く楽になります。  
+
 
 
 # Getting Started with Zephyr RTOS on Nordic nRF52832
@@ -913,18 +916,6 @@ BLE / Blutooth部分に至っては、prj.conf に設定を書くだけ。exchan
 I²C などのセンサー周りさえしっかり押さえられればすごく楽チンぽんですよ。  
 
 Zephyr RTOSは 2019/04 現在 v1.14 までリリースされていて、このバージョンでLTSにもなっています（そしてみんなダイスキ・オープンソース！）   
-
-## 2021 / 08 / 25改訂 インストール＆セットアップ 
-
-nRF Connect Desktop アプリケーションが進化し、3.7.0 以降は GUI で nRF Connect SDK や IDE である、Segger embedded Studio のインストールが可能になりました。  
-なんと！ Install ボタンをクリックするだけで全てが完了してしまいます！！！  
-
-<img width="80%" alt="screen_nrf_connect_desktop_01.png" src="images/screen_nrf_connect_desktop_01.png">
-
-<img width="80%" alt="screen_nrf_connect_desktop_02.png" src="images/screen_nrf_connect_desktop_01.png">
-
-
-
 
 ## Zephyr RTOS Programming ( I²C 編 )
 
@@ -1568,7 +1559,7 @@ Nordicの次期 SDK である nRF Connect SDKは ZephyrOS™️ がベースな�
 
 ### さて・・・
 
-HAL の話ね。 I2C  にしろ、SPI にしろ、Zephyr RTOS / nRF Connect SDK では大体 HAL のお世話になると思うのですが、これが顕著に遅いため、nRF5 SDK と比較して 2〜3ms 時間がかかります。遅いです。  
+HAL の話ね。 I2C  にしろ、SPI にしろ、Zephyr RTOS / nRF Connect SDK では大体 HAL のお世話になると思うのですが、これが顕著に遅いため、nRF5 SDK と比較して 1〜2ms 時間がかかります。遅いです。  
 これが結構致命的なので、nrfx ドライバが まぁ、本体なので、がんばって書いた方が幸せになります。  
 特に ADC 周りでいい感じにやろうとすると、PPI + Easy DMA + nrfx ドライバで IRQ 割り込みハンドラ + Timer + BLE とかなるので、がんばりましょう。頑張ると 200Ksps できます。  
 
@@ -1584,7 +1575,7 @@ Nordic の SDK 内のサンプルはとてもとても有能ですが、Github(N
 
 ### あ、sleep はしちゃダメですよ
 
-nRF5 SDK (SoftDevice) の BLE 通信 ではもろに CPU がBLE 通信の処理を担っていたため、かなり電力を食いました。が、しかし、nRF Connect SDK からは CPU を介さずに BLE の通信処理を行うように BLE Stack が変わったため、 非常に省電力になっています。  
+nRF5 SDK (SoftDevice) の BLE 通信 ではもろに CPU がBLE 通信の処理を担っていたため、かなり電力を食いました。が、しかし、nRF Connect SDK からは PPI で CPU を介さずに BLE の通信処理を行うように BLE Stack が変わったため、 非常に省電力になっています。  
 
 それに伴って、アプリケーションコードも変更する必要が出てきます。  
 
@@ -1592,9 +1583,27 @@ nRF5 SDK (SoftDevice) の BLE 通信 ではもろに CPU がBLE 通信の処理�
 
 何が言いたいかというと、 CPU を sleep させた後に wake up した際の電池の消耗がBLE 通信よりも激しい為、CPU を sleep するよりも BLE 通信をし続けた方が遥かに電池消耗のコストが低く抑えれるという事です。  
 
+下手に 数秒ごとに LED をチカチカさせる処理なんかを書いてしまうと、sleep からの復帰のための wakeup にかかる電力を余計に消耗してしまう羽目になるので、非常に良くないです。  
+
+
 ### （コイン）電池
 
 コンビニエンスストア等の販売店へ行くと、色々なメーカー様の電池が販売されていますが、電池はメーカーごとにかなり違いが出ますので、注意して選ぶ必要があります。気をつけましょう。  
+
+### 2021 / 08 / 25改訂 インストール＆セットアップ ( nRF Connect SDK 編 )
+
+nRF Connect Desktop アプリケーションが進化し、3.7.0 以降は GUI で nRF Connect SDK や IDE である、Segger embedded Studio のインストールが可能になりました。  
+なんと！ Install ボタンをクリックするだけで全てが完了してしまいます！！！  
+
+<img width="80%" alt="screen_nrf_connect_desktop_01.png" src="images/screen_nrf_connect_desktop_01.png">
+
+<img width="80%" alt="screen_nrf_connect_desktop_02.png" src="images/screen_nrf_connect_desktop_01.png">
+
+### PPI vs EasyDMA
+
+まぁ、両方使えるなら使えば CPU レスで駆動できるので良いのですが、PPI は イベント -> タスクを結ぶためのものなので、ちょっと難しい。ので、無理に使用しなくても良いかなと。  
+どうしても Timer で μ秒 ごとに動かしたいとかある場合は容赦なく PPI のお世話になりますけども。  
+ただ単に I2C 経由でセンサーの値を読みたいとかだったら PPI までは必要ないかなぁ。  
 
 # Getting Started with HardWare on Nordic nRF52832
 
@@ -1650,10 +1659,10 @@ WLSCP パッケージ版のモジュールを使用すると、センサーも�
 他の GPIO ピンに対しても同様ですよね。適宜プルアップもしくはプルダウン抵抗をちゃんと付けましょう。 10kΩ ね。  
 
 ### プルアップ抵抗は
-10kΩ以上を載せましょう。3kΩとか低いのはダメですよ。  
+10kΩ以上を載せましょう。3kΩとか低いのはダメですよ。引っ張られるよ。  
 
 ### nRF52のドライブ能力は
-5mA （ nRF51822 の 0.5mA から１０倍に引き上げられました）なので、大体のケースは大丈夫ですが、必要に応じてMOSFET も実装しておくと助かるかも知れません（こんな事もあろうかと！！的に）。  
+5mA （ nRF51822 の 0.5mA から１０倍に引き上げられました）なので、大体のケースは大丈夫かと思いますが、必要に応じてMOSFET も実装しておくと助かるかも知れません（こんな事もあろうかと！！的に）。  
 
 
 
@@ -1676,7 +1685,7 @@ WLSCP パッケージ版のモジュールを使用すると、センサーも�
 はんだごてで付けられるよう、なるべく大きいサイズにしました  
 <img width="100%" alt="board" src="images/mdbt42q_simple_03.png">  
 あ、これクリスタルに繋げるコンデンサの値がちょっとちゃうかも。  
-FC-12M の 32KHz 水晶振動子なら、 12.5pF コンデンサが２個。  
+FC-12M の 32kHz 水晶振動子なら、 12.5pF コンデンサが２個。かな？  
 サイズはそのままで。  
 
 ハンダ付けして完成  
