@@ -914,6 +914,18 @@ I²C などのセンサー周りさえしっかり押さえられればすごく
 
 Zephyr RTOSは 2019/04 現在 v1.14 までリリースされていて、このバージョンでLTSにもなっています（そしてみんなダイスキ・オープンソース！）   
 
+## 2021 / 08 / 25改訂 インストール＆セットアップ 
+
+nRF Connect Desktop アプリケーションが進化し、3.7.0 以降は GUI で nRF Connect SDK や IDE である、Segger embedded Studio のインストールが可能になりました。  
+なんと！ Install ボタンをクリックするだけで全てが完了してしまいます！！！  
+
+<img width="80%" alt="screen_nrf_connect_desktop_01.png" src="images/screen_nrf_connect_desktop_01.png">
+
+<img width="80%" alt="screen_nrf_connect_desktop_02.png" src="images/screen_nrf_connect_desktop_01.png">
+
+
+
+
 ## Zephyr RTOS Programming ( I²C 編 )
 
 書こうかどうしようか迷ったけど書いとこか。  
@@ -1573,9 +1585,9 @@ Nordic の SDK 内のサンプルはとてもとても有能ですが、Github(N
 ### あ、sleep はしちゃダメですよ
 
 nRF5 SDK (SoftDevice) の BLE 通信 ではもろに CPU がBLE 通信の処理を担っていたため、かなり電力を食いました。が、しかし、nRF Connect SDK からは CPU を介さずに BLE の通信処理を行うように BLE Stack が変わったため、 非常に省電力になっています。  
-  
+
 それに伴って、アプリケーションコードも変更する必要が出てきます。  
-  
+
 今までは、BLE 通信が終わったら即 CPU を Sleep させて再度起こしてから通信開始とか、あるいは何某かのトリガーを引いたら BLE 通信を行うという設計であれば、省電力になる・・・というスタイルが多かったように見えますが、nRF Connect SDK からは CPU を介さずにBLE 通信が行われるため、CPU を Sleep させない方が省電力になります。  
 
 何が言いたいかというと、 CPU を sleep させた後に wake up した際の電池の消耗がBLE 通信よりも激しい為、CPU を sleep するよりも BLE 通信をし続けた方が遥かに電池消耗のコストが低く抑えれるという事です。  
@@ -1633,6 +1645,19 @@ nRF5 SDK (SoftDevice) の BLE 通信 ではもろに CPU がBLE 通信の処理�
 
 WLSCP パッケージ版のモジュールを使用すると、センサーもつけて 裏側に JST PHR-2コネクタつけて 18mm x 20mm くらいの基板サイズに実装可能です。  
 
+### あぁ
+そもそも リセットピンは出すだけじゃなくて、ちゃんとプルアップ抵抗付けておかないと不定になるから電源引っこ抜いてもそりゃブートせんわな。そりゃそうだよね。っていうことにちゃんと気がつけるようになります。
+他の GPIO ピンに対しても同様ですよね。適宜プルアップもしくはプルダウン抵抗をちゃんと付けましょう。 10kΩ ね。  
+
+### プルアップ抵抗は
+10kΩ以上を載せましょう。3kΩとか低いのはダメですよ。  
+
+### nRF52のドライブ能力は
+5mA （ nRF51822 の 0.5mA から１０倍に引き上げられました）なので、大体のケースは大丈夫ですが、必要に応じてMOSFET も実装しておくと助かるかも知れません（こんな事もあろうかと！！的に）。  
+
+
+
+
 ### まずは手のせ出来るBLEモジュールでやってみよう
 
 
@@ -1649,13 +1674,15 @@ WLSCP パッケージ版のモジュールを使用すると、センサーも�
 
  [ BOM（部品一覧） ]   
 はんだごてで付けられるよう、なるべく大きいサイズにしました  
-<img width="100%" alt="board" src="images/mdbt42q_simple_03.png">
-
-
+<img width="100%" alt="board" src="images/mdbt42q_simple_03.png">  
+あ、これクリスタルに繋げるコンデンサの値がちょっとちゃうかも。  
+FC-12M の 32KHz 水晶振動子なら、 12.5pF コンデンサが２個。  
+サイズはそのままで。  
 
 ハンダ付けして完成  
-<img width="50%" alt="board" src="images/IMG_6155.jpeg">
+<img width="50%" alt="board" src="images/IMG_6155.jpeg">  
 
+でもやっぱりリフローの方がいいな。  
 
 
 # Getting Started with CoreBluetooth on iOS
