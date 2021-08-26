@@ -1684,7 +1684,7 @@ WLSCP パッケージ版のモジュールを使用すると、センサーも�
  [ BOM（部品一覧） ]   
 はんだごてで付けられるよう、なるべく大きいサイズにしました  
 <img width="100%" alt="board" src="images/mdbt42q_simple_03.png">  
-  
+
 ハンダ付けして完成  
 <img width="50%" alt="board" src="images/IMG_6155.jpeg">  
 
@@ -2018,7 +2018,20 @@ CONFIG_BT_RPMSG_NRF53=y
 
 Rust がさいつよの BLE Central やった・・・素晴らしい・・・神・・・  
 
+# BLE / Bluetooth5 ®️ Central Role
 
+iOS 以外（Androidはやったこと無いので、知らないので、Androidはやる気が全くしないので）の Central Role は nRF52 / nRF53 の nRF Connect SDK を使った Central がとても素敵です。  
+  
+nRF Connect SDK には ZephyrOS™️ ＋ Nordic お墨付の BLE ライブラリが豊富に同梱されているため、gatt dm の discovery が神です。  
+  
+この神の gatt dm( GATT Discovery Manager) によって、GATT Service / Characteristics の探索が非常に簡便化されており、iOS で BLE アプリケーションを作った経験があるならば、直感的にnRF52 / nRF53 MCU において BLE Central アプリケーション が作れます。  
+  
+はー、とても神。素晴らしい。神。  
+  
+何故かというと、再接続性が神だから。に尽きるんじゃ無いかなぁ。  
+  
+コネクション周りの（アプリケーションとしての）処理さえ仕様をキチンと決めておけば、iOS アプリケーションと遜色のないソフトウェアが組み込みデバイスでも実装可能になりますね。  
+LLPM を使用した Gaming mouse / keyboard などの実装をする場合とかは nRF52 / nRF53 MCU じゃないとダメでしょうしね。  
 
 # つまり
 
