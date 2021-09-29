@@ -4,7 +4,7 @@
 
 ### 自己紹介
 - ででん（屋号）と申します。BLEを少しやってます。  
-<img width="90%" alt="TY52832Axis6_1_0_2.jpg">  
+<img width="60%" alt ="ty52832axis6.jpg" src="images/ty52832axis6.jpg">  
 
 ### おしながき
   - [BLEと6軸センサー](https://dedendendede.base.shop/items/41904798)
