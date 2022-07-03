@@ -37,7 +37,7 @@
 [SC_Box](./hex_and_source/SC_Box.zip)  
 
 ### 使い方
-<img src="images/IMG_8572.jpeg" alt="IMG_8572.jpeg" width="40%">  
+<img src="images/IMG_8571_02.jpeg" alt="IMG_8571_02.jpeg" width="40%">  
 
   - 裏面にあるコネクタにLi-poバッテリをセットし、スライドスイッチで電源をONにします  
   - LEDが５秒程度点灯し、消灯したらBluetooth と センサーが稼働します  
@@ -45,5 +45,5 @@
   
 
 ### 販売先
-[BASE](https://dedendendede.base.shop/) で売ってます。  
+[BASE](https://dedendendede.base.shop/) で売り出しします（予定）。  
 
