@@ -3,7 +3,7 @@
 # TY52832Axis6_UltraSmall
 
 ### 商品説明
-<img width="60%" alt ="ty52832axis6_ultrasmall.jpg" src="images/IMG_8926.jpg">  
+<img width="50%" alt ="ty52832axis6_ultrasmall.jpg" src="images/IMG_8926.jpg">  
 
   - 18mm x 20mm の超小型 Bluetooth5 ®︎ 開発用基板です。  
   - ６軸センサー（加速度・ジャイロ）搭載 Li-poバッテリーで動きます。  
@@ -37,7 +37,7 @@
 [SC_Box](./hex_and_source/SC_Box.zip)  
 
 ### 使い方
-<img src="images/IMG_8571_02.jpeg" alt="IMG_8571_02.jpeg" width="40%">  
+<img src="images/IMG_8571_02.jpg" alt="IMG_8571_02.jpeg" width="40%">  
 
   - 裏面にあるコネクタにLi-poバッテリをセットし、スライドスイッチで電源をONにします  
   - LEDが５秒程度点灯し、消灯したらBluetooth と センサーが稼働します  
