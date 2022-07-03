@@ -4,14 +4,16 @@
 
 ### 自己紹介
 - ででん（屋号）と申します。BLEを少しやってます。  
-<img width="60%" alt ="ty52832axis6.jpg" src="images/ty52832axis6.jpg">  
+<img width="50%" alt ="ty52832axis6.jpg" src="images/ty52832axis6.jpg">  
+<img width="50%" alt ="ty52832axis6_ultrasmall.jpg" src="images/IMG_8926.jpg">  
 
 ### お店
   - [ででん屋](https://dedendendede.base.shop/)  
 
 ### おしながき
   - [BLEと6軸センサー （ふつうの サイズ）](https://www.chocbanana.com/ty52832axis6)  
-  - [BLEと6軸センサー （超小さい サイズ）] ( comming soon.  )  
+  - [BLEと6軸センサー （超小さい サイズ）](https://www.chocbanana.com/ty52832axis6_ultrasmall)  
+  - [BLEと微小信号測定センサ ] ( comming soon... )  
 
 
 ### お話
