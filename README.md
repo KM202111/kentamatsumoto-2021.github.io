@@ -4,8 +4,13 @@
 
 ### 自己紹介
 - ででん（屋号）と申します。BLEを少しやってます。  
-<img width="50%" alt ="ty52832axis6.jpg" src="images/ty52832axis6.jpg">  
-<img width="50%" alt ="ty52832axis6_ultrasmall.jpg" src="images/IMG_8926.jpg">  
+
+|  TY52832Axis6  |  TY52832Axis6_UltraSmall  |
+| :---:| :---: |
+|  <img width="50%" alt ="ty52832axis6.jpg" src="images/ty52832axis6.jpg">  |  <img width="50%" alt ="ty52832axis6_ultrasmall.jpg" src="images/IMG_8926.jpg">  |
+
+  
+  
 
 ### お店
   - [ででん屋](https://dedendendede.base.shop/)  
