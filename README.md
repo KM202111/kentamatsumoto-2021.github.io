@@ -5,9 +5,9 @@
 ### 自己紹介
 - ででん（屋号）と申します。BLEを少しやってます。  
 
-|  TY52832Axis6  |  TY52832Axis6_UltraSmall  |
+|  TY52832Axis6（ふつうのサイズ）  |  TY52832Axis6_UltraSmall（超小さいサイズ）  |
 | :---:| :---: |
-|  <img width="50%" alt ="ty52832axis6.jpg" src="images/ty52832axis6.jpg">  |  <img width="50%" alt ="ty52832axis6_ultrasmall.jpg" src="images/IMG_8926.jpg">  |
+|  <img width="60%" alt="ty52832axis6.jpg" src="images/ty52832axis6.jpg">  |  <img width="90%" alt="ty52832axis6_ultrasmall.jpg" src="images/IMG_8926.jpg">  |
 
 
 ### お店
