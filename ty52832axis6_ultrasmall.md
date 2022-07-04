@@ -29,8 +29,9 @@
 [peripheral_icm20649](./hex_and_source/peripheral_icm20649.zip)  
 
 ### iOSアプリケーション・サンプルコード
-[SC_Box_20649](./hex_and_source/SC_Box_20649.zip)  
+<img  alt="IMG_8950.png" src="images/IMG_8950.png">  
 
+[SC_Box_20649](./hex_and_source/SC_Box_20649.zip)  
 
 ### 使い方
 <img src="images/IMG_8571.jpg" alt="IMG_8571.jpeg" width="40%">  
@@ -38,8 +39,8 @@
   - 裏面にあるコネクタにLi-poバッテリをセットし、スライドスイッチで電源をONにします  
   - LEDが５秒程度点灯し、消灯したらBluetooth と センサーが稼働します  
   - スマートフォンアプリとデバイスがBluetooth接続し、通信を開始する( Notification がON になる )とLEDが点滅します  
-  
+  - センサーの値に応じて、iOSアプリケーション内のキューブがクルクル回ります。  
 
 ### 販売先
-[BASE](https://dedendendede.base.shop/) で売り出しします（予定）。  
+[BASE](https://dedendendede.base.shop/) （予定）。  
 
