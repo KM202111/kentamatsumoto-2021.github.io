@@ -25,11 +25,11 @@
 ### ハードウェアの回路図
 <img  alt="ty52832axis6_ultrasmall_schema" src="images/ty52832axis6_ultrasmall_schema.png">  
 
-### ファームウェア
-
 ### ファームウェア・ソースコード
+[peripheral_icm20649](./hex_and_source/peripheral_icm20649.zip)  
 
 ### iOSアプリケーション・サンプルコード
+[SC_Box_20649](./hex_and_source/SC_Box_20649.zip)  
 
 
 ### 使い方
