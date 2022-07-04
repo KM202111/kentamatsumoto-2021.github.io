@@ -9,21 +9,17 @@
   - ６軸センサー（加速度・ジャイロ）搭載 Li-poバッテリーで動きます。  
 
 ### スペック
-  - Bluetooth 5.0 ®︎ MCU: EYSHSNZWZ ( nRF52832 Cortex M4F 64KB RAM / 512KB flash)  
+  - Bluetooth 5.0 ®︎ MCU: EYSHSNZWZ ( nRF52832 Cortex M4F 64KB RAM / 512KB flash / DCDC 有効時 1.7V 〜 3V まで稼働可能)  
   - ６軸センサー : Invensense ICM-20649 ( ３軸加速度、３軸ジャイロ、Digital Motion Processor™　 ) 搭載  
+  - 基板サイズ 18mm x 20mm 重さ 1.2g  
 
   - 動作時間： デフォルトのファームウェア / 110mAh のLi-poバッテリで 100 時間程度 連続稼働  
-  - 消費電力： デフォルトのファームウェア / 110mAh のLi-poバッテリでおよそ 1.1mAh ( DMP ON ) DCDC 有効時 1.7V 〜 3V まで稼働可能  
+  - 消費電力： デフォルトのファームウェア / 110mAh のLi-poバッテリでおよそ 1.1mAh ( DMP ON )  
 
 ### センサーからの出力データ
   - 加速度  
   - ジャイロ（角速度）  
   - クォータニオン（四元数）  
-  - 線形加速度  
-  - 歩数検知  
-  - 歩数  
-
-デフォルトのファームウェアでは、この内 加速度・ジャイロ・クォータニオンを Bluetooth5 ®︎ で送信可能になります。  
 
 
 ### ハードウェアの回路図
@@ -34,10 +30,10 @@
 ### ファームウェア・ソースコード
 
 ### iOSアプリケーション・サンプルコード
-[SC_Box](./hex_and_source/SC_Box.zip)  
+
 
 ### 使い方
-<img src="images/IMG_8571_02.jpg" alt="IMG_8571_02.jpeg" width="40%">  
+<img src="images/IMG_8571.jpg" alt="IMG_8571.jpeg" width="40%">  
 
   - 裏面にあるコネクタにLi-poバッテリをセットし、スライドスイッチで電源をONにします  
   - LEDが５秒程度点灯し、消灯したらBluetooth と センサーが稼働します  
