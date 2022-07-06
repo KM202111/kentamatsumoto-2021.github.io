@@ -21,12 +21,17 @@
   - ジャイロ（角速度）  
   - クォータニオン（四元数）  
 
-
+<!-- 
 ### ハードウェアの回路図
 <img  alt="ty52832axis6_ultrasmall_schema" src="images/ty52832axis6_ultrasmall_schema.png">  
+-->
 
 ### ファームウェア・ソースコード
 [peripheral_icm20649](./hex_and_source/peripheral_icm20649.zip)  
+
+
+### ボード定義ファイル
+[nrf52_eyshsnzwz](./hex_and_source/nrf52_eyshsnzwz.zip)
 
 ### iOSアプリケーション・サンプルコード
 <img  alt="IMG_8950.png" src="images/IMG_8950.png">  
