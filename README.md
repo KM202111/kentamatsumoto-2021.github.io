@@ -14,9 +14,9 @@
   - [ででん屋](https://dedendendede.base.shop/)  
 
 ### おしながき
-  - [BLEと6軸センサー （ふつうの サイズ）](https://www.chocbanana.com/ty52832axis6)  
-  - [BLEと6軸センサー （超小さい サイズ）](https://www.chocbanana.com/ty52832axis6_ultrasmall)  
-  - [BLEと微小信号測定センサ ] ( comming soon... )  
+  - [Bluetooth5®︎と6軸センサー （ふつうの サイズ）](https://www.chocbanana.com/ty52832axis6)  
+  - [Bluetooth5®︎と6軸センサー （超小さい サイズ）](https://www.chocbanana.com/ty52832axis6_ultrasmall)  
+  - [Bluetooth5®︎と微小信号測定センサ ] ( comming soon... )  
 
 
 ### お話

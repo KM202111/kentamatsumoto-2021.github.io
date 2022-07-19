@@ -103,7 +103,7 @@ Bluetooth3 までのを含むモジュールの場合、Dual mode。BLEだけの
   - つまり、Roleとしては両方PeripheralですがGATT ServerとGATT Clientが逆になっている・・・ということです。  
 
 ## Bluetooth 5
-2018年 3月時点での話のまとめ  
+2022年 7月時点での話のまとめ  
 
 Nordic semiの場合、nRF51822 及び nRF52xxx  
 SoftDevice駆動。工藤ちゃうで駆動やで。  
@@ -131,6 +131,7 @@ nRF52810 - RAM       24KB 64MHz Cortex-M4 値段が nRF52832の半分くらい�
 nRF52811　(しらない)  
 nRF52840 - RAM      256KB 64MHz Cortex-M4F  5.5V  
 nRF52833 - ・・・ AoA / AoD Bluetooth5.2 対応  
+nRF52820 - RAM 32KB / Bluetooth5.3 対応 (メチャ小さいから、これがイチオシ)  
 nRF5340 - でゅあるこあのスゴイやつ！！ <- New  
 
 まぁ、いいやめんどくさい、スペックシート見てくれ。  
@@ -145,11 +146,11 @@ nRF5340 - でゅあるこあのスゴイやつ！！ <- New
 全体のコストバランス見ようね。  
 
 (Raytacのモジュール) Adafruit Feather nRF52 Bluefruit LE  
-太陽誘電の開発用基板  
+加賀FEIの開発用基板  
 Nordic nRF52-DK  
 
 この中でサクっと買えるのは Adafruit Feather nRF52 Bluefruit LE です  
-仕事でやるなら太陽誘電のボードだとピン配置がDKボード互換である場合が多いので、これかなぁ  
+仕事でやるなら 加賀FEI のボードだとピン配置がDKボード互換である場合が多いので、これかなぁ  
 
 初心者は Adafruit Feather nRF52 Bluefruit LEかな  
 Nordicの 52-DKボードは国内の電波法の技適が通っていないため、電波暗室などでなら使えますが通常の場所では電波法違反になるので使わないでください  
@@ -161,6 +162,9 @@ USBも載りましたんで、もうnRF52840で行きましょう。そうしま
 
 ### nRF5340
 デュアルコアになって更に省電力でパワーアップ！！もうこれにしましょう。  
+
+### nRF52820
+RAMが32KBですが、USB載ってて Bluetooth5.3対応なのでこれが良いです。これにしましょう。  
 
 ### BLE over 6LoWPAN
  nRF5 SDK v17 からBLE 6LoWPANのサンプルが削除されました  
@@ -228,6 +232,8 @@ Zigbee
 3.0 stack  
 日本のアライアンス消えちゃった？  
 
+コネクティビティなんとかっていのになってる。  
+
 どっちが良いのか  
 どっちもまだ低消費電力じゃないので人類には早すぎる！  
 
@@ -254,6 +260,7 @@ nRF52のI2Sは24bitらしいです。nRF5340のI2Sは32bitらしいです。
 取得しなければならない。  
 
 Nordic semiの場合、MCUとSoftDeviceのバージョンそれぞれに応じてSIG認証を取っているので、選択するMCUとSoftDeviceのバージョンの組み合わせで申請する（んだと思う）  
+nRF Connect SDK の場合は、ムセンコネクトさまが素晴らしい資料を公開されているので、そちらをご覧ください。  
 
 
 ## ソフトウェアの開発環境
@@ -1235,6 +1242,10 @@ ZephyrOSのHexを焼いてすぐに文鎮になるわけではなく、電源を
 
 なので、必ずSESでソフトウェア開発しながらIDEでHex(elf)をDownloadし、Verifyをかければリセットピン出してなくても大丈夫です。のハズ！！きっと！！  
 
+## nRF Connect SDK v2.0 以降は 神の VSCode 
+VS Codeに nRF Connect SDK の Extension が来ているので、神になりました。  
+
+
 ## それでもハマってしまったヒト向け
 
 対象が nRF52832 / nRF52840 であるならですが、DAP Link書き込み器を用意してください。  
@@ -1540,6 +1551,8 @@ Lチカをやるのであれば、BLEの周期ごとにLEDをtoggleさせた方�
 ZephyrOSからはBLEの処理はPPIで走るので、実質センサーから値を読むのとLEDをチカチカさせる・・・くらいのタスクで済むと思われるので、無闇矢鱈に Timer割り込みするのは良くないです。  
 
 気をつけてコードを書けば、CR2032 で 100時間連続稼働します。 <- New!  
+追記： リチウムイオン電池版を作ったら、110mAh (CR2032の半分)で 99.5時間連続稼働したので、すごくなりました. <- New！！  
+
 
 ### おすすめの書籍
 そんな私の手に差し伸べられた救世主！神！！友利奈緒が書いた nRF5 Segger Embedded Studio本がなんとboothに！！！！これは買わなくては！！！！  
@@ -1604,6 +1617,8 @@ nRF Connect Desktop アプリケーションが進化し、3.7.0 以降は GUI �
 まぁ、両方使えるなら使えば CPU レスで駆動できるので良いのですが、PPI は イベント -> タスクを結ぶためのものなので、ちょっと難しい。ので、無理に使用しなくても良いかなと。  
 どうしても Timer で μ秒 ごとに動かしたいとかある場合は容赦なく PPI のお世話になりますけども。  
 ただ単に I2C 経由でセンサーの値を読みたいとかだったら PPI までは必要ないかなぁ。  
+
+追記： PPI はいいぞ！！！  
 
 # Getting Started with HardWare on Nordic nRF52832
 
@@ -1689,7 +1704,7 @@ WLSCP パッケージ版のモジュールを使用すると、センサーも�
 <img width="50%" alt="board" src="images/IMG_6155.jpeg">  
 
 でもやっぱりリフローの方がいいな。  
-
+なんだっけ？ホットエアーでやるやつで炙れば良いかな。アレの方が簡単そう。  
 
 # Getting Started with CoreBluetooth on iOS
 
