@@ -3,7 +3,7 @@
 # ででんのホームページ
 
 ### 自己紹介
-- ででん（屋号）と申します。BLEを少しやってます。  
+- ででん（屋号）と申します。BLEとかを少しやってます。  
 
 |  TY52832Axis6（ふつうのサイズ）  |  TY52832Axis6_UltraSmall（超小さいサイズ）  |
 | :---:| :---: |
@@ -22,4 +22,4 @@
 ### お話
   - [びーえるいー](https://www.chocbanana.com/ble)
   - [あいおーてぃー](https://www.chocbanana.com/nrf91)
-
+  - [わいふぁい](https://www.chocbanana.com/nRF7002_Wi-Fi_Station_over_MQTT)
