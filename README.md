@@ -21,5 +21,5 @@
 
 ### お話
   - [びーえるいー](https://www.chocbanana.com/ble)
-  - [あいおーてぃー](https://www.chocbanana.com/nrf91)
+  - [せるらーせるらー](https://www.chocbanana.com/nrf91)
   - [わいふぁい](https://www.chocbanana.com/nrf7002)
