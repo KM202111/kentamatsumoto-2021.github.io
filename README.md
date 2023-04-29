@@ -7,7 +7,7 @@
 
 |  TY52832Axis6（ふつうのサイズ）  |  TY52832Axis6_UltraSmall（超小さいサイズ）  |
 | :---:| :---: |
-|  <img width="60%" alt="ty52832axis6.jpg" src="images/ty52832axis6.jpg">  |  <img width="90%" alt="ty52832axis6_ultrasmall.jpg" src="images/IMG_8926.jpg">  |
+|  <img width="60%" alt="cachedImage_3.jpg" src="images/cachedImage_3.jpg">  |  <img width="90%" alt="ty52832axis6_ultrasmall.jpg" src="images/IMG_8926.jpg">  |
 
 
 ### お店
@@ -22,4 +22,4 @@
 ### お話
   - [びーえるいー](https://www.chocbanana.com/ble)
   - [あいおーてぃー](https://www.chocbanana.com/nrf91)
-  - [わいふぁい](https://www.chocbanana.com/nRF7002_Wi-Fi_Station_over_MQTT)
+  - [わいふぁい](https://www.chocbanana.com/nrf7002)
