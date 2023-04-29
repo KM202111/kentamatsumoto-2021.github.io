@@ -7,7 +7,7 @@
 
 |  TY52832Axis6（ふつうのサイズ）  |  TY52832Axis6_UltraSmall（超小さいサイズ）  |
 | :---:| :---: |
-|  <img width="60%" alt="cachedImage_3.jpg" src="images/cachedImage_3.jpg">  |  <img width="90%" alt="ty52832axis6_ultrasmall.jpg" src="images/IMG_8926.jpg">  |
+|  <img width="90%" alt="cachedImage_3.jpg" src="images/cachedImage_3.jpg">  |  <img width="90%" alt="ty52832axis6_ultrasmall.jpg" src="images/IMG_8926.jpg">  |
 
 
 ### お店
