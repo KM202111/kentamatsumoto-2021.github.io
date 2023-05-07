@@ -132,7 +132,8 @@ nRF52811　(しらない)
 nRF52840 - RAM      256KB 64MHz Cortex-M4F  5.5V  
 nRF52833 - ・・・ AoA / AoD Bluetooth5.2 対応  
 nRF52820 - RAM 32KB / Bluetooth5.3 対応 (メチャ小さいから、これがイチオシ)  
-nRF5340 - でゅあるこあのスゴイやつ！！ <- New  
+nRF5340 - でゅあるこあのスゴイやつ！！   
+nRF54H20 - 謎の H の秘密が明らかになるのはいつ？！ <- New  
 
 まぁ、いいやめんどくさい、スペックシート見てくれ。  
 
@@ -165,6 +166,8 @@ USBも載りましたんで、もうnRF52840で行きましょう。そうしま
 
 ### nRF52820
 RAMが32KBですが、USB載ってて Bluetooth5.3対応なのでこれが良いです。これにしましょう。  
+### nRF54H20
+Cortex M33 + RISC-V + I3C + CAN もうこれで良いんじゃ無いかな。
 
 ### BLE over 6LoWPAN
  nRF5 SDK v17 からBLE 6LoWPANのサンプルが削除されました  
@@ -225,7 +228,7 @@ IPv6ベース
 100ms未満のレイテンシ  
 ネットワークリーダーがダウンした時に自己判断して新リーダーを決定し、自己修復する機能付き  
 
-THREADはParticleがやってたけど撤退しました。  
+THREADはParticleがやってたけど撤退した。  
 
 
 Zigbee  
@@ -247,8 +250,6 @@ Zigbee
 • Advertising channel index  
 • Periodic Advertising Sync Transfer  
 • Sleeve of minor enhancements  
-
-AoA、位相だから頑張ってね！！！！（どうすればいいんだよ・・・iPhoneはUWB載せちゃったよ・・・  
 
 BT5.1 で Periodic Advertising Sync Transfer（定期的なアドバタイジングと同期した転送）機能が載りました。  
 Gatt cachingもかなり有効に効いてます。  
@@ -370,7 +371,9 @@ ble_app_uartとtwi_sensorの２つのサンプル・プロジェクトの内容�
 ### ちゃんとこの nRF5 SDK をマスターしておきましょう
 そうすると、nRF Connect SDK での開発が凄く楽になります。  
 
-
+### DFU
+UART とか BLE とか色々なやり方で DFU できるますが、Secure DFU なので DFU させるアプリケーションのhexに署名付けるんですよね。  
+Arduino IDE の UARTのポート経由でファームウェアを流し込むような感じにはちょっと使えないので、そういうことがやりたい場合は Adafruit の Bootloader を使いましょう。  
 
 # Getting Started with Zephyr RTOS on Nordic nRF52832
 
@@ -1244,7 +1247,7 @@ ZephyrOSのHexを焼いてすぐに文鎮になるわけではなく、電源を
 
 ## nRF Connect SDK v2.0 以降は 神の VSCode 
 VS Codeに nRF Connect SDK の Extension が来ているので、神になりました。  
-
+VS Code でも v1.x.x の古いバージョンの nRF Connect SDK も使用できるので神です。  
 
 ## それでもハマってしまったヒト向け
 
@@ -2036,15 +2039,15 @@ Rust がさいつよの BLE Central やった・・・素晴らしい・・・�
 # BLE / Bluetooth5 ®️ Central Role
 
 iOS 以外（Androidはやったこと無いので、知らないので、Androidはやる気が全くしないので）の Central Role は nRF52 / nRF53 の nRF Connect SDK を使った Central がとても素敵です。  
-  
+
 nRF Connect SDK には ZephyrOS™️ ＋ Nordic お墨付の BLE ライブラリが豊富に同梱されているため、gatt dm の discovery が神です。  
-  
+
 この神の gatt dm( GATT Discovery Manager) によって、GATT Service / Characteristics の探索が非常に簡便化されており、iOS で BLE アプリケーションを作った経験があるならば、直感的にnRF52 / nRF53 MCU において BLE Central アプリケーション が作れます。  
-  
+
 はー、とても神。素晴らしい。神。  
-  
+
 何故かというと、再接続性が神だから。に尽きるんじゃ無いかなぁ。  
-  
+
 コネクション周りの（アプリケーションとしての）処理さえ仕様をキチンと決めておけば、iOS アプリケーションと遜色のないソフトウェアが組み込みデバイスでも実装可能になりますね。  
 LLPM を使用した Gaming mouse / keyboard などの実装をする場合とかは nRF52 / nRF53 MCU じゃないとダメでしょうしね。  
 
