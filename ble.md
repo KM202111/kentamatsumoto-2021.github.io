@@ -1,4 +1,4 @@
-# Bluetooth 2022-7-20 00:08 までの備忘録
+# Bluetooth 2023-05-09 01:30 までの備忘録
 
 [TOC]
 
@@ -267,10 +267,10 @@ nRF Connect SDK の場合は、ムセンコネクトさまが素晴らしい資�
 ## ソフトウェアの開発環境
 
 ### Arm Mbed
-MbedOS / オンラインコンパイラ/MbedStudioで開発出来るみたいです（Bluetooth StackはCordio Stackになります）  
+昔 MbedOS / オンラインコンパイラ/MbedStudioで開発出来たみたいです（Bluetooth StackはCordio Stackでした）  
 
 ### Arduino
-  Adafruit Feather nRF52 Bluefruit LEもGitHubにそれぞれパッケージとして上がってますので、こちらをArduino IDEにインストールすればいいです  
+  Adafruit Feather nRF52 Bluefruit LEもGitHubにそれぞれパッケージとして上がってますので、こちらをArduino IDEにインストールすればいいです。当然Nordicはサポートしてませんが。  
 
 [ Adafruit Feather nRF52 Bluefruit LE ]  https://github.com/adafruit/Adafruit_nRF52_Arduino  
 
@@ -299,12 +299,16 @@ LED1個（抵抗も忘れずに）、GPIOボタン1個、リセットボタン�
 
 
 どうやら nRF Connect SDK v1.5.0 から nRF52 のサポートも入ったっぽい（ように見える）んですよね・・・  
-
+nRF Connect SDK v1.9.0 から神のVSCode で開発できるからもう nRF Connect SDKでいいや。  
 
 ### iOS13とか
 iPhone7 以降の端末はiOS13 (13.2？もうアップデートしちゃったからよく分かんない)でATT MTUが185を越えて200byte以上のパケットも扱えるように（iOSデバイス内のコンボチップとファームウェアに依存します）。  
 
 nRF52が対向の場合、MTUは 247 - 3 = 244 まで扱えるので、そのくらいなら行けそう。とりあえず iPhone7（iOS13.2） <-> nRF52832 で 208byte パケットのやり取りが可能なことは確認。  
+  
+iOS13？！ もうすぐiOS17だから・・・（震え  
+
+
 
 ### 電池持ちとスループット
 
@@ -329,6 +333,10 @@ nRF5 SDK でも ble_stack_init() を呼んだ後に sd_power_dcdc_mode_set() し
 https://devzone.nordicsemi.com/f/nordic-q-a/35056/is-dc-dc-regulator-enabled-in-nrf52-series  
 
 今までのセンサーは3V付近で動作するものが多かったですが、昨今のセンサーは 1.7V付近でも動作するものが多いので、MCUに搭載されているDCDCをきちんと使えばMCUもセンサーも1.7Vでもちゃんと動作させることが可能になりますので。  
+  
+CR2032 でも電池を振り絞れるように低めの電圧になった時にゴニョってしてくれるICを付けると良いよね。  
+
+
 
 ### スループットとかデータ長とか
 
@@ -1247,7 +1255,7 @@ ZephyrOSのHexを焼いてすぐに文鎮になるわけではなく、電源を
 
 ## nRF Connect SDK v2.0 以降は 神の VSCode 
 VS Codeに nRF Connect SDK の Extension が来ているので、神になりました。  
-VS Code でも v1.x.x の古いバージョンの nRF Connect SDK も使用できるので神です。  
+VS Code でも v1.9.x の古いバージョンの nRF Connect SDK も使用できるので神です。  
 
 ## それでもハマってしまったヒト向け
 
@@ -1708,6 +1716,11 @@ WLSCP パッケージ版のモジュールを使用すると、センサーも�
 
 でもやっぱりリフローの方がいいな。  
 なんだっけ？ホットエアーでやるやつで炙れば良いかな。アレの方が簡単そう。  
+  
+### DFU するくらいなら DAPLink書き込み器をですね
+UART  over DFU とか BLE over DFU とかありますけど、昨今はセキュリティの関係で気軽にさせてくれないんですよね。SecureDFUとか言って。だったら簡単に書き込み出来るDAPLink 書き込み器作っちゃった方がみんな幸せになりますよ。  
+
+
 
 # Getting Started with CoreBluetooth on iOS
 
